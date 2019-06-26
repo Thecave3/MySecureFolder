@@ -24,11 +24,15 @@ public class InitActivity extends AppCompatActivity {
                 .url(url)
                 .build();
 
-        try (Response response = new OkHttpClient().newCall(request).execute()) {
-            Log.d(TAG, "Risposta: ");
-            response.body().string();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        OkHttpClient client = new OkHttpClient();
+        new Thread(() -> {
+            try (Response response = client.newCall(request).execute()) {
+                Log.d(TAG, "Risposta: " + response.body().string());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
     }
 }
