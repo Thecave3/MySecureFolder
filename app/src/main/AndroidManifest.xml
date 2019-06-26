@@ -16,10 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".RegistrationActivity" />
+        <activity android:name=".InitActivity" />
         <activity android:name=".VoiceActivity" />
         <activity android:name=".FaceActivity" />
-        <activity android:name=".InitActivity">
+        <activity android:name=".RegistrationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -3,5 +3,9 @@
 
     <string name="subscription_key">69ac2c5c6f024996a845609e413c1d1d</string>
     <string name="endpoint">https://eastus.api.cognitive.microsoft.com/face/v1.0</string>
+    <string name="button">Button</string>
+    <string name="take_a_photo">Take a Photo</string>
+    <string name="send">Send</string>
+    <string name="save">Save</string>
 
 </resources>
