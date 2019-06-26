@@ -30,5 +30,8 @@ public class VoiceActivity extends AppCompatActivity {
         SpeakerVerificationClient client = new SpeakerVerificationRestClient(properties.getProperty("apikey.voice.key1"));
         //Profile profile = client.getProfile("");
 
+        // enrollment : registration
+        // recognition
+
     }
 }
