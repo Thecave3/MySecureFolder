@@ -7,6 +7,7 @@
         android:name="android.hardware.Camera"
         android:required="true" />
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission
@@ -22,7 +23,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".visualizzaFoto"></activity>
         <activity android:name=".InitActivity" />
         <activity android:name=".VoiceActivity" />
         <activity android:name=".FaceActivity" />

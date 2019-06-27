@@ -7,5 +7,6 @@
     <string name="take_a_photo">Take a Photo</string>
     <string name="send">Send</string>
     <string name="save">Save</string>
+    <string name="Submit" />
 
 </resources>

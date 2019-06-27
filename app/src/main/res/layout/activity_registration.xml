@@ -30,11 +30,21 @@
             android:layout_marginTop="20dp"
             android:hint="Insert name.." />
 
+        <TextView
+            android:text="PICTURE AREA"
+            android:textSize="24sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:id="@+id/textPicture"/>
+
         <ImageView
             android:id="@+id/mimageView"
             android:layout_width="300dp"
             android:layout_height="300dp"
-            android:layout_below="@id/name"
+            android:layout_below="@id/textPicture"
             android:layout_marginTop="20dp"
             android:layout_centerHorizontal="true"
             android:src="@drawable/male"
@@ -51,6 +61,48 @@
             android:background="@color/design_default_color_primary"
             android:text="@string/take_a_photo"
             android:textColor="@color/cardview_light_background" />
+
+        <TextView
+            android:text="RECORD AREA"
+            android:textSize="24sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/bottoneFoto"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:id="@+id/textRecord"/>
+
+        <Button
+            android:id="@+id/btnStartRecord"
+            android:text="START RECORD"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textRecord"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"/>
+
+        <Button
+            android:id="@+id/btnStopRecord"
+            android:text="STOP RECORD"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btnStartRecord"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"/>
+
+
+        <Button
+            android:id="@+id/bottoneSalva"
+            android:layout_width="300dp"
+            android:layout_height="35dp"
+            android:layout_below="@id/btnStopRecord"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:background="@color/colorPrimaryDark"
+            android:text="Submit"
+            android:onClick="send"
+            android:textColor="@color/cardview_light_background" />
+
 
 
     </RelativeLayout>
