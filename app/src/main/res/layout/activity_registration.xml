@@ -47,7 +47,7 @@
             android:layout_below="@id/textPicture"
             android:layout_marginTop="20dp"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/male"
+            android:src="@drawable/ic_person_black_24dp"
             />
 
 
