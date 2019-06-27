@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -142,9 +143,26 @@ public class RegistrationActivity extends AppCompatActivity {
             }
 
             case IMAGE_REQUEST: {
-                Matrix matrix = new Matrix();
-                matrix.postRotate(270);
+
                 Bitmap bitmap = BitmapFactory.decodeFile(currentImagePath);
+                ExifInterface exifInterface = null;
+                try {
+                    exifInterface = new ExifInterface(currentImagePath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+                Matrix matrix = new Matrix();
+                switch (orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        matrix.setRotate(90);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        matrix.setRotate(270);
+                        break;
+                    default:
+                }
                 Bitmap rotate = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                 imageView.setImageBitmap(rotate);
                 break;

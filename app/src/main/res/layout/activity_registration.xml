@@ -55,9 +55,9 @@
             android:id="@+id/bottoneFoto"
             android:layout_width="150dp"
             android:layout_height="35dp"
+            android:layout_marginTop="10dp"
             android:layout_below="@id/mimageView"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="15dp"
             android:background="@color/design_default_color_primary"
             android:text="@string/take_a_photo"
             android:textColor="@color/cardview_light_background" />
@@ -98,6 +98,7 @@
             android:layout_below="@id/btnStopRecord"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="50dp"
+            android:layout_marginBottom="30dp"
             android:background="@color/colorPrimaryDark"
             android:text="Submit"
             android:onClick="send"
