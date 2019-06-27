@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_weight="10">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -29,35 +31,25 @@
             android:hint="Insert name.." />
 
         <ImageView
-            android:id="@+id/face"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:id="@+id/mimageView"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
             android:layout_below="@id/name"
             android:layout_marginTop="20dp"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/male" />
+            android:src="@drawable/male"
+            />
+
 
         <Button
-            android:id="@+id/takephoto"
+            android:id="@+id/bottoneFoto"
             android:layout_width="150dp"
             android:layout_height="35dp"
-            android:layout_below="@id/face"
+            android:layout_below="@id/mimageView"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp"
             android:background="@color/design_default_color_primary"
             android:text="@string/take_a_photo"
-            android:textColor="@color/cardview_light_background" />
-
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="400dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/takephoto"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="50dp"
-            android:background="@color/colorPrimary"
-            android:text="@string/save"
             android:textColor="@color/cardview_light_background" />
 
 

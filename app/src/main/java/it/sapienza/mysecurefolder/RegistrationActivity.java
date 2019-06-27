@@ -2,11 +2,14 @@ package it.sapienza.mysecurefolder;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,71 +24,84 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
+
+import static okhttp3.internal.http.HttpDate.format;
 
 
 public class RegistrationActivity extends AppCompatActivity {
 
-    private final static String personGroupName = "users";
-    TextView personNameTextField;
-
-    private static final int CAMERA_REQUEST = 1888;
-    private ImageView imageView;
-    private static final int MY_CAMERA_PERMISSION_CODE = 100;
-
+    String currentImagePath = null;
+    private static final int IMAGE_REQUEST = 1;
+    Button fotoButton;
+    ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
-        this.imageView = (ImageView)this.findViewById(R.id.face);
-        Button photoButton = (Button) this.findViewById(R.id.takephoto);
-        photoButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
-                {
-                    requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+        imageView = findViewById(R.id.mimageView);
+        fotoButton = findViewById(R.id.bottoneFoto);
+        fotoButton.setOnClickListener(v -> {
+            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if(cameraIntent.resolveActivity(getPackageManager())!=null){
+                File imageFile = null;
+                try {
+                    imageFile=getImageFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                else
-                {
-                    Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(cameraIntent, CAMERA_REQUEST);
+
+                if(imageFile!=null){
+                    Uri imageUri  = FileProvider.getUriForFile(getApplicationContext(),"com.example.android.fileprovider",imageFile);
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+                    startActivityForResult(cameraIntent,IMAGE_REQUEST);
                 }
             }
         });
+
+
     }
+
+
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == MY_CAMERA_PERMISSION_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
-                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, CAMERA_REQUEST);
-            } else {
-                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-        @Override
-        protected void onActivityResult(int requestCode, int resultCode, Intent data)
-        {
-            if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK)
-            {
-                Bitmap photo = (Bitmap) data.getExtras().get("data");
-                imageView.setImageBitmap(photo);
-            }
-        }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        /*Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        startActivity(intent);
+
+
+        Bitmap bitmap = BitmapFactory.decodeFile(getIntent().getStringExtra("image_path"));
+        imageView.setImageBitmap(bitmap);
+         Bitmap bitmap = BitmapFactory.decodeFile(getIntent().getStringExtra("image_path"));
+        */
+        Matrix matrix = new Matrix();
+        matrix.postRotate(270);
+        Bitmap bitmap = BitmapFactory.decodeFile(currentImagePath);
+        Bitmap rotate = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+        imageView.setImageBitmap(rotate);
     }
 
 
+
+    private File getImageFile() throws IOException{
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",Locale.ITALIAN).format(new Date());
+        String imageName = "jpeg_"+timeStamp+"_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        File imageFile = File.createTempFile(imageName,".jpg",storageDir);
+        currentImagePath = imageFile.getAbsolutePath();
+        return imageFile;
+    }
+
+}
 
 
 
