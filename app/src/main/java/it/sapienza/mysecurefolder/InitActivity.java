@@ -24,7 +24,6 @@ public class InitActivity extends AppCompatActivity {
         Button signup = findViewById(R.id.signupActivity);
         Button login = findViewById(R.id.loginActivity);
         signup.setOnClickListener(v -> startActivity(new Intent(InitActivity.this, RegistrationActivity.class)));
-        login.setOnClickListener(v -> startActivity(new Intent(InitActivity.this, FaceActivity.class)));
-
+        login.setOnClickListener(v -> startActivity(new Intent(InitActivity.this, MainActivity.class)));
     }
 }

@@ -2,12 +2,7 @@ package it.sapienza.mysecurefolder;
 
 import android.app.Application;
 
-import java.io.IOException;
-
-import okhttp3.Cache;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 
 public class App extends Application {

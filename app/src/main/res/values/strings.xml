@@ -14,5 +14,7 @@
     <string name="do_the_three_enrollments">Do the three enrollments</string>
     <string name="login">Login</string>
     <string name="registration_photo">registration photo</string>
+    <string name="sign_in">sign_in</string>
+
 
 </resources>
