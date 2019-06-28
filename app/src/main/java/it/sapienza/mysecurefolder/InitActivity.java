@@ -21,14 +21,10 @@ public class InitActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init);
 
-        Button signup  = findViewById(R.id.signupActivity);
-        signup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(InitActivity.this,RegistrationActivity.class));
-            }
-        });
-
+        Button signup = findViewById(R.id.signupActivity);
+        Button login = findViewById(R.id.loginActivity);
+        signup.setOnClickListener(v -> startActivity(new Intent(InitActivity.this, RegistrationActivity.class)));
+        login.setOnClickListener(v -> startActivity(new Intent(InitActivity.this, FaceActivity.class)));
 
     }
 }

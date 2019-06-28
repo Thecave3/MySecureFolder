@@ -13,37 +13,55 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import cafe.adriel.androidaudiorecorder.AndroidAudioRecorder;
 import cafe.adriel.androidaudiorecorder.model.AudioChannel;
 import cafe.adriel.androidaudiorecorder.model.AudioSampleRate;
 import cafe.adriel.androidaudiorecorder.model.AudioSource;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import static it.sapienza.mysecurefolder.App.BASE_URL;
 
 
 public class RegistrationActivity extends AppCompatActivity {
 
     private static final String TAG = RegistrationActivity.class.getSimpleName();
-    String currentImagePath = null;
     private static final int IMAGE_REQUEST = 1;
-    private static final int MY_CAMERA_PERMISSION_CODE = 128;
     private static final int RECORD_REQUEST = 2;
 
-    Button fotoButton;
-    Button saveButton;
+    private static final int MY_CAMERA_PERMISSION_CODE = 128;
+
+    Button photoButton, saveNameButton, btnStartRecord;
     ImageView imageView;
-    Button btnStartRecord, btnStopRecord;
+    EditText nameEditText;
+
+    String personId;
+    String currentImagePath = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,18 +69,16 @@ public class RegistrationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_registration);
 
         btnStartRecord = findViewById(R.id.btnStartRecord);
-        btnStopRecord = findViewById(R.id.btnStopRecord);
         imageView = findViewById(R.id.mimageView);
-        fotoButton = findViewById(R.id.bottoneFoto);
-        btnStartRecord = findViewById(R.id.btnStartRecord);
-        btnStopRecord = findViewById(R.id.btnStopRecord);
-        saveButton = findViewById(R.id.bottoneSalva);
+        photoButton = findViewById(R.id.bottoneFoto);
+        saveNameButton = findViewById(R.id.buttonSave);
+        nameEditText = findViewById(R.id.name);
 
 
-        fotoButton.setOnClickListener(v -> {
+        photoButton.setOnClickListener(v -> {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                     checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}, MY_CAMERA_PERMISSION_CODE);
+                requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_CAMERA_PERMISSION_CODE);
             } else {
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (cameraIntent.resolveActivity(getPackageManager()) != null) {
@@ -88,9 +104,12 @@ public class RegistrationActivity extends AppCompatActivity {
                 view -> {
                     String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ITALIAN).format(new Date());
                     String audioPath = "/" + timeStamp;
-                    String filePath = getExternalFilesDir(Environment.DIRECTORY_MUSIC).getPath() + audioPath+".wav";
+                    String externalFilePath = Objects.requireNonNull(getExternalFilesDir(Environment.DIRECTORY_MUSIC)).getPath();
+
+
+                    String filePath = externalFilePath + audioPath + ".wav";
                     Log.d(TAG, filePath);
-                    int color = getResources().getColor(R.color.colorPrimaryDark);
+                    int color = ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark);
 
                     AndroidAudioRecorder.with(this)
                             .setFilePath(filePath)
@@ -104,31 +123,45 @@ public class RegistrationActivity extends AppCompatActivity {
                             .record();
                 });
 
-        btnStopRecord.setOnClickListener(view -> {
-            // btnStartRecord.setEnabled(true);
-            // btnStopRecord.setEnabled(false);
-        });
-/*
-        saveButton.setOnClickListener(v -> new Thread(() -> {
-            EditText name = findViewById(R.id.name);
-            OkHttpClient client = new OkHttpClient();
+
+        saveNameButton.setOnClickListener(v -> new Thread(() -> {
+            String newUsername = String.valueOf(nameEditText.getText());
+            if (TextUtils.isEmpty(newUsername)) {
+                runOnUiThread(() -> nameEditText.setError("You did not enter a username"));
+                return;
+            }
+
+            runOnUiThread(() -> nameEditText.setEnabled(false));
+
             RequestBody formBody = new FormBody.Builder()
-                    .add("name", name.getText().toString())
+                    .add("name", newUsername)
                     .build();
             Request request = new Request.Builder()
                     .url(BASE_URL + "/create-new-person")
                     .post(formBody)
                     .build();
             try {
-                Response response = client.newCall(request).execute();
-                String result = response.body().string();
-                new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show());
-                //Log.d("Risposta: ",response.message());
+                Response response = App.getHTTPClient().newCall(request).execute();
+                JSONObject responseBody = new JSONObject(Objects.requireNonNull(response.body()).string());
 
-            } catch (IOException e) {
+                if (responseBody.has("error")) {
+                    String error = responseBody.getString("error");
+                    runOnUiThread(() -> {
+                        nameEditText.setEnabled(true);
+                        Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                    });
+                } else if (responseBody.has("personId")) {
+                    personId = responseBody.getString("personId");
+                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Your person id is " + personId, Toast.LENGTH_LONG).show());
+                } else {
+                    String bodySt = responseBody.toString();
+                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodySt, Toast.LENGTH_LONG).show());
+                }
+
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
-        }).start());*/
+        }).start());
     }
 
 
@@ -148,7 +181,6 @@ public class RegistrationActivity extends AppCompatActivity {
             }
 
             case IMAGE_REQUEST: {
-
                 Bitmap bitmap = BitmapFactory.decodeFile(currentImagePath);
                 ExifInterface exifInterface = null;
                 try {
@@ -157,7 +189,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+                int orientation = Objects.requireNonNull(exifInterface).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
                 Matrix matrix = new Matrix();
                 switch (orientation) {
                     case ExifInterface.ORIENTATION_ROTATE_90:
@@ -170,6 +202,45 @@ public class RegistrationActivity extends AppCompatActivity {
                 }
                 Bitmap rotate = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                 imageView.setImageBitmap(rotate);
+                new Thread(() -> {
+                    File fileToUpload = new File(currentImagePath);
+
+                    // TODO: 28/06/2019 controllare media type 
+                    RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                            .addFormDataPart("face", fileToUpload.getName(),
+                                    RequestBody.create(MediaType.parse("image/*"), fileToUpload))
+                            .addFormDataPart("personId", personId)
+                            .build();
+
+                    Request request = new Request.Builder()
+                            .url(BASE_URL + "/add-face")
+                            .post(requestBody)
+                            .build();
+
+                    try {
+                        Response response = App.getHTTPClient().newCall(request).execute();
+                        String resBody = response.body().string();
+                        Log.d(TAG, resBody);
+                        JSONObject responseBody = new JSONObject(resBody);
+
+                        if (responseBody.has("error")) {
+                            String error = responseBody.getString("error");
+                            runOnUiThread(() -> {
+                                nameEditText.setEnabled(true);
+                                Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                            });
+                        } else if (responseBody.has("personId")) {
+                            personId = responseBody.getString("personId");
+                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Your person id is " + personId, Toast.LENGTH_LONG).show());
+                        } else {
+                            String bodySt = responseBody.toString();
+                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodySt, Toast.LENGTH_LONG).show());
+                        }
+
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
                 break;
             }
 
