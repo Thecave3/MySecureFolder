@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -85,7 +86,9 @@ public class RegistrationActivity extends AppCompatActivity {
 
         btnStartRecord.setOnClickListener(
                 view -> {
-                    String filePath = getExternalFilesDir(Environment.DIRECTORY_MUSIC).getPath() + "/recorded_audio.wav";
+                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ITALIAN).format(new Date());
+                    String audioPath = "/" + timeStamp;
+                    String filePath = getExternalFilesDir(Environment.DIRECTORY_MUSIC).getPath() + audioPath+".wav";
                     Log.d(TAG, filePath);
                     int color = getResources().getColor(R.color.colorPrimaryDark);
 
@@ -136,6 +139,8 @@ public class RegistrationActivity extends AppCompatActivity {
             case RECORD_REQUEST: {
                 if (resultCode == RESULT_OK) {
                     Log.d(TAG, "onActivityResult:  Great! User has recorded and saved the audio file");
+                    btnStartRecord.setBackgroundColor(Color.GREEN);
+                    btnStartRecord.setTextColor(Color.WHITE);
                 } else if (resultCode == RESULT_CANCELED) {
                     Log.d(TAG, "onActivityResult:  Oops! User has canceled the recording");
                 }
@@ -171,6 +176,7 @@ public class RegistrationActivity extends AppCompatActivity {
             default:
                 Log.e(TAG, "onActivityResult: boh");
         }
+
     }
 
     private File getImageFile() throws IOException {
