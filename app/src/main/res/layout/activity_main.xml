@@ -25,6 +25,7 @@
         android:hint="Insert Name.."/>
 
     <Button
+        android:id="@+id/submitName"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/insertName"
