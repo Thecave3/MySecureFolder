@@ -15,4 +15,16 @@
         android:layout_centerVertical="true"
         />
 
+    <Button
+        android:id="@+id/signinActivity"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="Sign In"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/signupActivity"
+        android:layout_marginBottom="20dp"
+        />
+
+
+
 </RelativeLayout>

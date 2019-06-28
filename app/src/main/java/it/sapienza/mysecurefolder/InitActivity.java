@@ -29,6 +29,14 @@ public class InitActivity extends AppCompatActivity {
             }
         });
 
+        Button signin  = findViewById(R.id.signinActivity);
+        signin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(InitActivity.this,MainActivity.class));
+            }
+        });
+
 
     }
 }

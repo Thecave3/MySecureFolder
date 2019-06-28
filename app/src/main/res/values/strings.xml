@@ -9,5 +9,7 @@
     <string name="save">Save</string>
     <string name="Submit" />
     <string name="sign_up">Sign Up</string>
+    <string name="sign_in">sign_in</string>
+    <string name="insert_name">Insert Name</string>
 
 </resources>
