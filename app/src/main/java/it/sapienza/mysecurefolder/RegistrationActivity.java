@@ -53,6 +53,8 @@ public class RegistrationActivity extends AppCompatActivity {
     private static final int IMAGE_REQUEST = 1;
     private static final int RECORD_REQUEST = 2;
 
+
+
     private static final int MY_CAMERA_PERMISSION_CODE = 128;
 
     Button photoButton, saveNameButton, btnStartRecord;
@@ -170,14 +172,17 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case RECORD_REQUEST: {
-                if (resultCode == RESULT_OK) {
-                    Log.d(TAG, "onActivityResult:  Great! User has recorded and saved the audio file");
-                    btnStartRecord.setBackgroundColor(Color.GREEN);
-                    btnStartRecord.setTextColor(Color.WHITE);
-                } else if (resultCode == RESULT_CANCELED) {
-                    Log.d(TAG, "onActivityResult:  Oops! User has canceled the recording");
-                }
-                break;
+
+                        if (resultCode == RESULT_OK) {
+                        Log.d(TAG, "onActivityResult:  Great! User has recorded and saved the audio file");
+                        btnStartRecord.setBackgroundColor(Color.GREEN);
+                        btnStartRecord.setTextColor(Color.WHITE);
+
+                    } else if (resultCode == RESULT_CANCELED) {
+                        Log.d(TAG, "onActivityResult:  Oops! User has canceled the recording");
+                    }
+                    break;
+
             }
 
             case IMAGE_REQUEST: {
@@ -205,10 +210,10 @@ public class RegistrationActivity extends AppCompatActivity {
                 new Thread(() -> {
                     File fileToUpload = new File(currentImagePath);
 
-                    // TODO: 28/06/2019 controllare media type 
+
                     RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
                             .addFormDataPart("face", fileToUpload.getName(),
-                                    RequestBody.create(MediaType.parse("image/*"), fileToUpload))
+                                    RequestBody.create(MediaType.parse("image/jpeg"), fileToUpload))
                             .addFormDataPart("personId", personId)
                             .build();
 
@@ -243,6 +248,8 @@ public class RegistrationActivity extends AppCompatActivity {
                 }).start();
                 break;
             }
+
+
 
             default:
                 Log.e(TAG, "onActivityResult: boh");
