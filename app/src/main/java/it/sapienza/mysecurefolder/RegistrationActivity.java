@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -18,6 +17,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -52,14 +52,14 @@ public class RegistrationActivity extends AppCompatActivity {
     private static final String TAG = RegistrationActivity.class.getSimpleName();
     private static final int IMAGE_REQUEST = 1;
     private static final int RECORD_REQUEST = 2;
-
-
+    private int records = 0;
 
     private static final int MY_CAMERA_PERMISSION_CODE = 128;
 
-    Button photoButton, saveNameButton, btnStartRecord;
+    Button photoButton, saveNameButton, btnStartRecord, btnSendRecord;
     ImageView imageView;
     EditText nameEditText;
+
 
     String personId;
     String currentImagePath = null;
@@ -71,6 +71,7 @@ public class RegistrationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_registration);
 
         btnStartRecord = findViewById(R.id.btnStartRecord);
+        btnSendRecord = findViewById(R.id.btnSendRecord);
         imageView = findViewById(R.id.mimageView);
         photoButton = findViewById(R.id.bottoneFoto);
         saveNameButton = findViewById(R.id.buttonSave);
@@ -102,28 +103,12 @@ public class RegistrationActivity extends AppCompatActivity {
         });
 
 
-        btnStartRecord.setOnClickListener(
-                view -> {
-                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ITALIAN).format(new Date());
-                    String audioPath = "/" + timeStamp;
-                    String externalFilePath = Objects.requireNonNull(getExternalFilesDir(Environment.DIRECTORY_MUSIC)).getPath();
+        btnStartRecord.setOnClickListener(view ->
+        {
+            recordEnrollment();
+            records++;
 
-
-                    String filePath = externalFilePath + audioPath + ".wav";
-                    Log.d(TAG, filePath);
-                    int color = ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark);
-
-                    AndroidAudioRecorder.with(this)
-                            .setFilePath(filePath)
-                            .setColor(color)
-                            .setRequestCode(RECORD_REQUEST)
-                            .setSource(AudioSource.MIC)
-                            .setChannel(AudioChannel.MONO)
-                            .setSampleRate(AudioSampleRate.HZ_16000)
-                            .setAutoStart(true)
-                            .setKeepDisplayOn(true)
-                            .record();
-                });
+        });
 
 
         saveNameButton.setOnClickListener(v -> new Thread(() -> {
@@ -166,6 +151,78 @@ public class RegistrationActivity extends AppCompatActivity {
         }).start());
     }
 
+    void recordEnrollment() {
+
+        String audioPath = "/" + records;
+        String externalFilePath = Objects.requireNonNull(getExternalFilesDir(Environment.DIRECTORY_MUSIC)).getPath();
+
+        String filePath = externalFilePath + audioPath + ".wav";
+
+        Log.d(TAG, filePath);
+        int color = ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark);
+
+        AndroidAudioRecorder.with(this)
+                .setFilePath(filePath)
+                .setColor(color)
+                .setRequestCode(RECORD_REQUEST)
+                .setSource(AudioSource.MIC)
+                .setChannel(AudioChannel.MONO)
+                .setSampleRate(AudioSampleRate.HZ_16000)
+                .setAutoStart(true)
+                .setKeepDisplayOn(true)
+                .record();
+
+    }
+
+
+    public void sendAudioRecorder() {
+
+        //Send audio file to server
+        new Thread(() -> {
+
+            for (int i = 0; i < 3; i++) {
+                String audioPath = "/" + i;
+                String externalFilePath = Objects.requireNonNull(getExternalFilesDir(Environment.DIRECTORY_MUSIC)).getPath();
+
+                String filePath = externalFilePath + audioPath + ".wav";
+                File audioFileToUpload = new File(filePath);
+
+                RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                        .addFormDataPart("audio", audioFileToUpload.getName(),
+                                RequestBody.create(MediaType.parse("audio/wav"), audioFileToUpload))
+                        .addFormDataPart("name", String.valueOf(nameEditText.getText()))
+                        .build();
+
+                Request request = new Request.Builder()
+                        .url(BASE_URL + "/audio/enrollment")
+                        .post(requestBody)
+                        .build();
+
+                try {
+                    Response response = App.getHTTPClient().newCall(request).execute();
+                    String resBody = response.body().string();
+//                    Log.d(TAG, resBody);
+                    JSONObject responseBody = new JSONObject(resBody);
+
+                    if (responseBody.has("error")) {
+                        String error = responseBody.getString("error");
+                        runOnUiThread(() -> {
+                            nameEditText.setEnabled(true);
+                            Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                        });
+                    } else {
+                        String bodySt = responseBody.toString();
+                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodySt, Toast.LENGTH_LONG).show());
+                    }
+
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -173,15 +230,26 @@ public class RegistrationActivity extends AppCompatActivity {
         switch (requestCode) {
             case RECORD_REQUEST: {
 
-                        if (resultCode == RESULT_OK) {
-                        Log.d(TAG, "onActivityResult:  Great! User has recorded and saved the audio file");
-                        btnStartRecord.setBackgroundColor(Color.GREEN);
-                        btnStartRecord.setTextColor(Color.WHITE);
-
-                    } else if (resultCode == RESULT_CANCELED) {
-                        Log.d(TAG, "onActivityResult:  Oops! User has canceled the recording");
+                if (resultCode == RESULT_OK) {
+                    if (records < 3) {
+                        recordEnrollment();
+                        records++;
+                    } else {
+                        records = 0;
+                        sendAudioRecorder();
                     }
-                    break;
+
+                } else if (resultCode == RESULT_CANCELED) {
+                    Log.d(TAG, "onActivityResult:  Oops! User has canceled the recording");
+                }
+
+                Log.d(TAG, "onActivityResult:  Great! User has recorded and saved the audio files");
+
+                btnStartRecord.setVisibility(View.INVISIBLE);
+                btnSendRecord.setVisibility(View.VISIBLE);
+
+
+                break;
 
             }
 
@@ -248,7 +316,6 @@ public class RegistrationActivity extends AppCompatActivity {
                 }).start();
                 break;
             }
-
 
 
             default:

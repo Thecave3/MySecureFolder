@@ -93,6 +93,17 @@
             android:background="@drawable/rounded_button"
             android:text="START RECORD" />
 
+        <Button
+            android:id="@+id/btnSendRecord"
+            android:layout_width="200dp"
+            android:visibility="invisible"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textRecord"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/rounded_button"
+            android:text="SEND RECORDS" />
+
 
 
 
