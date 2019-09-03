@@ -77,7 +77,7 @@ public class RegistrationActivity extends AppCompatActivity {
         saveNameButton = findViewById(R.id.buttonSave);
         nameEditText = findViewById(R.id.name);
 
-
+// TODO: 03/09/2019 la prima richiesta lascia il current image path a null e fa crashare tutto perchè non entra nell'else
         photoButton.setOnClickListener(v -> {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                     checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {

@@ -59,7 +59,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:contentDescription="@string/registration_photo"
-            android:src="@drawable/ic_person_black_24dp" />
+            android:src="@drawable/male" />
 
 
         <Button
