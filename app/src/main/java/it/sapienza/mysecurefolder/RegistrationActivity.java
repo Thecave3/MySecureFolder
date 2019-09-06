@@ -6,7 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -44,9 +44,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static it.sapienza.mysecurefolder.App.BASE_URL;
-
-
 public class RegistrationActivity extends AppCompatActivity {
 
     private static final String TAG = RegistrationActivity.class.getSimpleName();
@@ -56,13 +53,12 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private static final int MY_CAMERA_PERMISSION_CODE = 128;
 
-    Button photoButton, saveNameButton, btnStartRecord, btnSendRecord;
-    ImageView imageView;
+    Button photoButton, saveNameButton, audioButton, btnSendRecord;
+    ImageView profileImage;
     EditText nameEditText;
 
-
     String personId;
-    String currentImagePath = null;
+    String currentImagePath;
 
 
     @Override
@@ -70,46 +66,27 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
-        btnStartRecord = findViewById(R.id.btnStartRecord);
+        audioButton = findViewById(R.id.btnStartRecord);
         btnSendRecord = findViewById(R.id.btnSendRecord);
-        imageView = findViewById(R.id.mimageView);
+        profileImage = findViewById(R.id.mimageView);
         photoButton = findViewById(R.id.bottoneFoto);
         saveNameButton = findViewById(R.id.buttonSave);
         nameEditText = findViewById(R.id.name);
 
-// TODO: 03/09/2019 la prima richiesta lascia il current image path a null e fa crashare tutto perchè non entra nell'else
         photoButton.setOnClickListener(v -> {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                     checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_CAMERA_PERMISSION_CODE);
             } else {
-                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-
-                    File imageFile = null;
-                    try {
-                        imageFile = getImageFile();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (imageFile != null) {
-                        Uri imageUri = FileProvider.getUriForFile(getApplicationContext(), "com.example.android.fileprovider", imageFile);
-                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                        startActivityForResult(cameraIntent, IMAGE_REQUEST);
-                    }
-                }
+                takePicture();
             }
         });
 
-
-        btnStartRecord.setOnClickListener(view ->
-        {
+        audioButton.setOnClickListener(view -> {
             recordEnrollment();
             records++;
 
         });
-
 
         saveNameButton.setOnClickListener(v -> new Thread(() -> {
             String newUsername = String.valueOf(nameEditText.getText());
@@ -124,7 +101,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     .add("name", newUsername)
                     .build();
             Request request = new Request.Builder()
-                    .url(BASE_URL + "/create-new-person")
+                    .url(App.getBaseUrl() + "/create-new-person")
                     .post(formBody)
                     .build();
             try {
@@ -151,6 +128,23 @@ public class RegistrationActivity extends AppCompatActivity {
         }).start());
     }
 
+    private void takePicture() {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+            try {
+                File imageFile = getImageFile();
+                if (imageFile != null) {
+                    Uri imageUri = FileProvider.getUriForFile(getApplicationContext(), "com.example.android.fileprovider", imageFile);
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    startActivityForResult(cameraIntent, IMAGE_REQUEST);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
     void recordEnrollment() {
 
         String audioPath = "/" + records;
@@ -174,12 +168,9 @@ public class RegistrationActivity extends AppCompatActivity {
 
     }
 
-
     public void sendAudioRecorder() {
-
         //Send audio file to server
         new Thread(() -> {
-
             for (int i = 0; i < 3; i++) {
                 String audioPath = "/" + i;
                 String externalFilePath = Objects.requireNonNull(getExternalFilesDir(Environment.DIRECTORY_MUSIC)).getPath();
@@ -194,14 +185,14 @@ public class RegistrationActivity extends AppCompatActivity {
                         .build();
 
                 Request request = new Request.Builder()
-                        .url(BASE_URL + "/audio/enrollment")
+                        .url(App.getBaseUrl() + "/audio/enrollment")
                         .post(requestBody)
                         .build();
 
                 try {
                     Response response = App.getHTTPClient().newCall(request).execute();
+                    assert response.body() != null;
                     String resBody = response.body().string();
-//                    Log.d(TAG, resBody);
                     JSONObject responseBody = new JSONObject(resBody);
 
                     if (responseBody.has("error")) {
@@ -224,12 +215,54 @@ public class RegistrationActivity extends AppCompatActivity {
 
     }
 
+    private void sendImage() {
+        new Thread(() -> {
+            File fileToUpload = new File(currentImagePath);
+            RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                    .addFormDataPart("face", fileToUpload.getName(),
+                            RequestBody.create(MediaType.parse("image/jpeg"), fileToUpload))
+                    .addFormDataPart("personId", personId)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(App.getBaseUrl() + "/add-face")
+                    .post(requestBody)
+                    .build();
+
+            try {
+                Response response = App.getHTTPClient().newCall(request).execute();
+                assert response.body() != null;
+                String resBody = response.body().string();
+                Log.d(TAG, resBody);
+                JSONObject responseBody = new JSONObject(resBody);
+
+                if (responseBody.has("error")) {
+                    String error = responseBody.getString("error");
+                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show());
+                } else {
+                    String bodySt = responseBody.toString();
+                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodySt, Toast.LENGTH_LONG).show());
+                }
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private File getImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ITALIAN).format(new Date());
+        String imageName = "jpeg_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File imageFile = File.createTempFile(imageName, ".jpg", storageDir);
+        currentImagePath = imageFile.getAbsolutePath();
+        return imageFile;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case RECORD_REQUEST: {
-
                 if (resultCode == RESULT_OK) {
                     if (records < 3) {
                         recordEnrollment();
@@ -245,12 +278,9 @@ public class RegistrationActivity extends AppCompatActivity {
 
                 Log.d(TAG, "onActivityResult:  Great! User has recorded and saved the audio files");
 
-                btnStartRecord.setVisibility(View.INVISIBLE);
+                audioButton.setVisibility(View.INVISIBLE);
                 btnSendRecord.setVisibility(View.VISIBLE);
-
-
                 break;
-
             }
 
             case IMAGE_REQUEST: {
@@ -274,49 +304,10 @@ public class RegistrationActivity extends AppCompatActivity {
                     default:
                 }
                 Bitmap rotate = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                imageView.setImageBitmap(rotate);
-                new Thread(() -> {
-                    File fileToUpload = new File(currentImagePath);
-
-
-                    RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                            .addFormDataPart("face", fileToUpload.getName(),
-                                    RequestBody.create(MediaType.parse("image/jpeg"), fileToUpload))
-                            .addFormDataPart("personId", personId)
-                            .build();
-
-                    Request request = new Request.Builder()
-                            .url(BASE_URL + "/add-face")
-                            .post(requestBody)
-                            .build();
-
-                    try {
-                        Response response = App.getHTTPClient().newCall(request).execute();
-                        String resBody = response.body().string();
-                        Log.d(TAG, resBody);
-                        JSONObject responseBody = new JSONObject(resBody);
-
-                        if (responseBody.has("error")) {
-                            String error = responseBody.getString("error");
-                            runOnUiThread(() -> {
-                                nameEditText.setEnabled(true);
-                                Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
-                            });
-                        } else if (responseBody.has("personId")) {
-                            personId = responseBody.getString("personId");
-                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Your person id is " + personId, Toast.LENGTH_LONG).show());
-                        } else {
-                            String bodySt = responseBody.toString();
-                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodySt, Toast.LENGTH_LONG).show());
-                        }
-
-                    } catch (IOException | JSONException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
+                profileImage.setImageBitmap(rotate);
+                sendImage();
                 break;
             }
-
 
             default:
                 Log.e(TAG, "onActivityResult: boh");
@@ -324,25 +315,15 @@ public class RegistrationActivity extends AppCompatActivity {
 
     }
 
-    private File getImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ITALIAN).format(new Date());
-        String imageName = "jpeg_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File imageFile = File.createTempFile(imageName, ".jpg", storageDir);
-        currentImagePath = imageFile.getAbsolutePath();
-        return imageFile;
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_CAMERA_PERMISSION_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
-                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, IMAGE_REQUEST);
+                Toast.makeText(this, "Camera permission granted.", Toast.LENGTH_LONG).show();
+                takePicture();
             } else {
-                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Camera permission denied.", Toast.LENGTH_LONG).show();
             }
         }
     }

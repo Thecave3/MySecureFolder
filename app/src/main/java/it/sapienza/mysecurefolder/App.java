@@ -7,7 +7,7 @@ import okhttp3.OkHttpClient;
 
 public class App extends Application {
 
-    public static final String BASE_URL = "https://secure-folder.herokuapp.com";
+    private static final String BASE_URL = "https://secure-folder.herokuapp.com" ;//"http://192.168.1.50:3000";
 
     public static OkHttpClient getHTTPClient() {
         return client;
@@ -23,7 +23,6 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
     }
 
 }

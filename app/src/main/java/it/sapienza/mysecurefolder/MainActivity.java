@@ -1,10 +1,9 @@
 package it.sapienza.mysecurefolder;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -16,8 +15,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
-import static it.sapienza.mysecurefolder.App.BASE_URL;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                     .add("name", name.getText().toString())
                     .build();
             Request request = new Request.Builder()
-                    .url(BASE_URL + "/verify-person")  //NON CONOSCO IL PATH SUL SERVER PER IL MATCH DEL NOME
+                    .url(App.getBaseUrl() + "/verify-person")  //NON CONOSCO IL PATH SUL SERVER PER IL MATCH DEL NOME
                     .post(formBody)
                     .build();
             try {

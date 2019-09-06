@@ -21,9 +21,9 @@ public class InitActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init);
 
-        Button signup = findViewById(R.id.signupActivity);
+        Button signButton = findViewById(R.id.signupActivity);
         Button login = findViewById(R.id.loginActivity);
-        signup.setOnClickListener(v -> startActivity(new Intent(InitActivity.this, RegistrationActivity.class)));
+        signButton.setOnClickListener(v -> startActivity(new Intent(InitActivity.this, RegistrationActivity.class)));
         login.setOnClickListener(v -> startActivity(new Intent(InitActivity.this, MainActivity.class)));
     }
 }
