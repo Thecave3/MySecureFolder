@@ -1,20 +1,13 @@
 <resources>
     <string name="app_name">My Secure Folder</string>
 
-    <string name="subscription_key">69ac2c5c6f024996a845609e413c1d1d</string>
-    <string name="endpoint">https://eastus.api.cognitive.microsoft.com/face/v1.0</string>
-    <string name="button">Button</string>
     <string name="take_a_photo">Take a Photo</string>
-    <string name="send">Send</string>
-    <string name="save">Save</string>
-    <string name="Submit" />
     <string name="sign_up">Sign Up</string>
     <string name="insert_name">Insert name..</string>
     <string name="take_a_picture_to_subscribe">Take a picture to subscribe</string>
     <string name="do_the_three_enrollments">Do the three enrollments</string>
     <string name="login">Login</string>
     <string name="registration_photo">registration photo</string>
-    <string name="sign_in">sign_in</string>
 
 
 </resources>
