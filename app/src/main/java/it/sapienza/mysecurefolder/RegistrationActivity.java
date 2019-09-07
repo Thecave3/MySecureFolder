@@ -6,7 +6,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+
 import androidx.exifinterface.media.ExifInterface;
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -58,7 +60,9 @@ public class RegistrationActivity extends AppCompatActivity {
     ImageView profileImage;
     EditText nameEditText;
 
-    String personId;
+    // Both the ID are taken during name registration and when they need to be passed singularly the field has to be personId
+    String personIdFace;
+    String personIdAudio;
     String currentImagePath;
 
 
@@ -86,7 +90,6 @@ public class RegistrationActivity extends AppCompatActivity {
         audioButton.setOnClickListener(view -> {
             recordEnrollment();
             records++;
-
         });
 
         saveNameButton.setOnClickListener(v -> new Thread(() -> {
@@ -115,12 +118,15 @@ public class RegistrationActivity extends AppCompatActivity {
                         nameEditText.setEnabled(true);
                         Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
                     });
-                } else if (responseBody.has("personId")) {
-                    personId = responseBody.getString("personId");
-                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Your person id is " + personId, Toast.LENGTH_LONG).show());
                 } else {
-                    String bodySt = responseBody.toString();
-                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodySt, Toast.LENGTH_LONG).show());
+                    if (responseBody.has("personIdFace") && responseBody.has("verificationProfileId")) {
+                        personIdFace = responseBody.getString("personIdFace");
+                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Your person id is " + personIdFace, Toast.LENGTH_LONG).show());
+                    } else {
+                        String bodyStr = responseBody.toString();
+                        Log.d(TAG, bodyStr);
+                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodyStr, Toast.LENGTH_LONG).show());
+                    }
                 }
 
             } catch (IOException | JSONException e) {
@@ -222,7 +228,7 @@ public class RegistrationActivity extends AppCompatActivity {
             RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
                     .addFormDataPart("face", fileToUpload.getName(),
                             RequestBody.create(MediaType.parse("image/jpeg"), fileToUpload))
-                    .addFormDataPart("personId", personId)
+                    .addFormDataPart("personId", personIdFace)
                     .build();
 
             Request request = new Request.Builder()
