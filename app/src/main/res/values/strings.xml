@@ -2,12 +2,15 @@
     <string name="app_name">My Secure Folder</string>
 
     <string name="take_a_photo">Take a Photo</string>
-    <string name="sign_up">Sign Up</string>
+    <string name="sign_up">Registration</string>
     <string name="insert_name">Insert name..</string>
-    <string name="take_a_picture_to_subscribe">Take a picture to subscribe</string>
-    <string name="do_the_three_enrollments">Do the three enrollments</string>
+    <string name="take_a_picture_to_subscribe">Take a picture to save your face</string>
+    <string name="do_the_three_enrollments">Enroll your voiceby saying for three times:\n\"be yourself everyone else is already taken\"</string>
     <string name="login">Login</string>
     <string name="registration_photo">registration photo</string>
+    <string name="save">Save</string>
+    <string name="send_records">SEND RECORDS</string>
+    <string name="start_record">START RECORD</string>
 
 
 </resources>

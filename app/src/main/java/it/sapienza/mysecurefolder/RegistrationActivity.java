@@ -61,9 +61,7 @@ public class RegistrationActivity extends AppCompatActivity {
     EditText nameEditText;
 
     // Both the ID are taken during name registration and when they need to be passed singularly the field has to be personId
-    String personIdFace;
-    String personIdAudio;
-    String currentImagePath;
+    String personIdFace, personIdAudio, currentImagePath;
 
 
     @Override
@@ -92,47 +90,17 @@ public class RegistrationActivity extends AppCompatActivity {
             records++;
         });
 
-        saveNameButton.setOnClickListener(v -> new Thread(() -> {
-            String newUsername = String.valueOf(nameEditText.getText());
-            if (TextUtils.isEmpty(newUsername)) {
-                runOnUiThread(() -> nameEditText.setError("You did not enter a username"));
+        saveNameButton.setOnClickListener(v -> {
+            String username = String.valueOf(nameEditText.getText());
+            if (TextUtils.isEmpty(username)) {
+                nameEditText.setError("You did not enter a username");
                 return;
             }
+            nameEditText.setEnabled(false);
+            createNewPerson(username);
+        });
 
-            runOnUiThread(() -> nameEditText.setEnabled(false));
-
-            RequestBody formBody = new FormBody.Builder()
-                    .add("name", newUsername)
-                    .build();
-            Request request = new Request.Builder()
-                    .url(App.getBaseUrl() + "/create-new-person")
-                    .post(formBody)
-                    .build();
-            try {
-                Response response = App.getHTTPClient().newCall(request).execute();
-                JSONObject responseBody = new JSONObject(Objects.requireNonNull(response.body()).string());
-
-                if (responseBody.has("error")) {
-                    String error = responseBody.getString("error");
-                    runOnUiThread(() -> {
-                        nameEditText.setEnabled(true);
-                        Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
-                    });
-                } else {
-                    if (responseBody.has("personIdFace") && responseBody.has("verificationProfileId")) {
-                        personIdFace = responseBody.getString("personIdFace");
-                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Your person id is " + personIdFace, Toast.LENGTH_LONG).show());
-                    } else {
-                        String bodyStr = responseBody.toString();
-                        Log.d(TAG, bodyStr);
-                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodyStr, Toast.LENGTH_LONG).show());
-                    }
-                }
-
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
-            }
-        }).start());
+        btnSendRecord.setOnClickListener(view -> sendAudioForEnrollment());
     }
 
     private void takePicture() {
@@ -152,7 +120,7 @@ public class RegistrationActivity extends AppCompatActivity {
         }
     }
 
-    void recordEnrollment() {
+    private void recordEnrollment() {
 
         String audioPath = "/" + records;
         String externalFilePath = Objects.requireNonNull(getExternalFilesDir(Environment.DIRECTORY_MUSIC)).getPath();
@@ -175,7 +143,43 @@ public class RegistrationActivity extends AppCompatActivity {
 
     }
 
-    public void sendAudioRecorder() {
+    private void createNewPerson(String username) {
+        new Thread(() -> {
+
+            RequestBody formBody = new FormBody.Builder()
+                    .add("name", username)
+                    .build();
+            Request request = new Request.Builder()
+                    .url(App.getBaseUrl() + "/create-new-person")
+                    .post(formBody)
+                    .build();
+            try {
+                Response response = App.getHTTPClient().newCall(request).execute();
+                JSONObject responseBody = new JSONObject(Objects.requireNonNull(response.body()).string());
+                if (responseBody.has("error")) {
+                    String error = responseBody.getString("error");
+                    runOnUiThread(() -> {
+                        nameEditText.setEnabled(true);
+                        Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                    });
+                } else {
+                    if (responseBody.has("personIdFace") && responseBody.has("verificationProfileId")) {
+                        personIdFace = responseBody.getString("personIdFace");
+                        personIdAudio = responseBody.getString("verificationProfileId");
+                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Your person id for face is " + personIdFace + ".\nYour person id for audio is " + personIdAudio, Toast.LENGTH_LONG).show());
+                    } else {
+                        String bodyStr = responseBody.toString();
+                        Log.d(TAG, bodyStr);
+                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodyStr, Toast.LENGTH_LONG).show());
+                    }
+                }
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    public void sendAudioForEnrollment() {
         //Send audio file to server
         new Thread(() -> {
             for (int i = 0; i < 3; i++) {
@@ -188,7 +192,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
                         .addFormDataPart("audio", audioFileToUpload.getName(),
                                 RequestBody.create(MediaType.parse("audio/wav"), audioFileToUpload))
-                        .addFormDataPart("name", String.valueOf(nameEditText.getText()))
+                        .addFormDataPart("personId", personIdAudio)
                         .build();
 
                 Request request = new Request.Builder()
@@ -212,14 +216,11 @@ public class RegistrationActivity extends AppCompatActivity {
                         String bodySt = responseBody.toString();
                         runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodySt, Toast.LENGTH_LONG).show());
                     }
-
                 } catch (IOException | JSONException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
-
-
     }
 
     private void sendImage() {
@@ -246,6 +247,10 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (responseBody.has("error")) {
                     String error = responseBody.getString("error");
                     runOnUiThread(() -> Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show());
+                } else if (responseBody.has("persistedFaceId")) {
+                    String persistedFaceId = responseBody.getString("persistedFaceId");
+                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Face registered! Persistent id: " + persistedFaceId, Toast.LENGTH_LONG).show());
+
                 } else {
                     String bodySt = responseBody.toString();
                     runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodySt, Toast.LENGTH_LONG).show());
@@ -276,15 +281,13 @@ public class RegistrationActivity extends AppCompatActivity {
                         records++;
                     } else {
                         records = 0;
-                        sendAudioRecorder();
                     }
 
                 } else if (resultCode == RESULT_CANCELED) {
-                    Log.d(TAG, "onActivityResult:  Oops! User has canceled the recording");
+                    Log.d(TAG, "onActivityResult: User has canceled the recording");
                 }
 
-                Log.d(TAG, "onActivityResult:  Great! User has recorded and saved the audio files");
-
+                Log.d(TAG, "onActivityResult: User has recorded and saved the audio files");
                 audioButton.setVisibility(View.INVISIBLE);
                 btnSendRecord.setVisibility(View.VISIBLE);
                 break;
