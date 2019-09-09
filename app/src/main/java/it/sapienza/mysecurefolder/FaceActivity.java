@@ -38,12 +38,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
-
-import cafe.adriel.androidaudiorecorder.AndroidAudioRecorder;
-import cafe.adriel.androidaudiorecorder.model.AudioChannel;
-import cafe.adriel.androidaudiorecorder.model.AudioSampleRate;
-import cafe.adriel.androidaudiorecorder.model.AudioSource;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
@@ -58,8 +52,8 @@ public class FaceActivity extends AppCompatActivity {
     private User user;
     private static final String TAG = CredentialsActivity.class.getSimpleName();
     private static final int IMAGE_REQUEST = 1;
-    ImageView profileImage;
-    Button photoButton;
+    private ImageView profileImage;
+    private Button photoButton;
     private static final int MY_CAMERA_PERMISSION_CODE = 128;
     String currentImagePath;
 
