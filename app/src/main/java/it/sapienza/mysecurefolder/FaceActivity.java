@@ -29,6 +29,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
+
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
@@ -58,7 +60,6 @@ public class FaceActivity extends AppCompatActivity {
     String currentImagePath;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,22 +77,22 @@ public class FaceActivity extends AppCompatActivity {
         });
     }
 
-        private void takePicture() {
-            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-                try {
-                    File imageFile = getImageFile();
-                    if (imageFile != null) {
-                        Uri imageUri = FileProvider.getUriForFile(getApplicationContext(), "com.example.android.fileprovider", imageFile);
-                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                        startActivityForResult(cameraIntent, IMAGE_REQUEST);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+    private void takePicture() {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+            try {
+                File imageFile = getImageFile();
+                if (imageFile != null) {
+                    Uri imageUri = FileProvider.getUriForFile(getApplicationContext(), "com.example.android.fileprovider", imageFile);
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    startActivityForResult(cameraIntent, IMAGE_REQUEST);
                 }
-
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+
         }
+    }
 
     private File getImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ITALIAN).format(new Date());
@@ -108,7 +109,7 @@ public class FaceActivity extends AppCompatActivity {
             RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
                     .addFormDataPart("face", fileToUpload.getName(),
                             RequestBody.create(MediaType.parse("image/jpeg"), fileToUpload))
-                    .addFormDataPart("personId", user.getFaceId())
+                    .addFormDataPart("recognitionModel", "recognition_02")
                     .build();
 
             Request request = new Request.Builder()
@@ -116,33 +117,44 @@ public class FaceActivity extends AppCompatActivity {
                     .post(requestBody)
                     .build();
 
+            final Runnable please_try_again = () -> Toast.makeText(getApplicationContext(), "Please try again", Toast.LENGTH_LONG).show();
             try {
                 Response response = App.getHTTPClient().newCall(request).execute();
                 assert response.body() != null;
                 String resBody = response.body().string();
                 Log.d(TAG, resBody);
-                JSONObject responseBody = new JSONObject(resBody);
-
-                if (responseBody.has("error")) {
-                    String error = responseBody.getString("error");
-                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show());
+                JSONArray responseArray = new JSONArray(resBody);
+                if (responseArray.length() > 0) {
+                    JSONObject responseBody = responseArray.getJSONObject(0);
+                    if (responseBody.has("error")) {
+                        String error = responseBody.getString("error");
+                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show());
+                    } else {
+                        //String bodySt = responseBody.toString();
+                        //runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodySt, Toast.LENGTH_LONG).show());
+                        verify(responseBody.getString("faceId"));
+                    }
                 } else {
-                    String bodySt = responseBody.toString();
-                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodySt, Toast.LENGTH_LONG).show());
-                    verify(bodySt);
-            }
+                    runOnUiThread(please_try_again);
+                }
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
+                runOnUiThread(please_try_again);
             }
 
         }).start();
     }
 
-    private void verify(String bodySt){
-        RequestBody verifyBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                .addFormDataPart("face", bodySt)
-                .addFormDataPart("personId", user.getFaceId())
-                .build();
+    private void verify(String faceId) {
+        JSONObject body = new JSONObject();
+        try {
+            body.put("faceId", faceId);
+            body.put("personId", user.getFaceId());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody verifyBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), body.toString());
+
         Request verify = new Request.Builder()
                 .url(App.getBaseUrl() + "/verify")
                 .post(verifyBody)
@@ -157,12 +169,14 @@ public class FaceActivity extends AppCompatActivity {
             if (responseVerifyBody.has("error")) {
                 String error = responseVerifyBody.getString("error");
                 runOnUiThread(() -> Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show());
+            } else if (responseVerifyBody.has("isIdentical") && responseVerifyBody.getBoolean("isIdentical")) {
+                Intent voiceIntent = new Intent(FaceActivity.this, VoiceActivity.class);
+                voiceIntent.putExtra("user", user);
+                startActivity(voiceIntent);
             } else {
-                String VerifyReturn = responseVerify.toString();
-                runOnUiThread(() -> Toast.makeText(getApplicationContext(), VerifyReturn, Toast.LENGTH_LONG).show());
+                runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Please try again, response: " + responseVerify, Toast.LENGTH_LONG).show());
             }
-        }
-        catch (IOException | JSONException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
     }
@@ -175,25 +189,25 @@ public class FaceActivity extends AppCompatActivity {
         ExifInterface exifInterface = null;
         try {
             exifInterface = new ExifInterface(currentImagePath);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            int orientation = Objects.requireNonNull(exifInterface).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
-            Matrix matrix = new Matrix();
-            switch (orientation) {
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    matrix.setRotate(90);
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    matrix.setRotate(270);
-                    break;
-                default:
-            }
-            Bitmap rotate = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            profileImage.setImageBitmap(rotate);
-            sendImage();
-            }
-
+        int orientation = Objects.requireNonNull(exifInterface).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+        Matrix matrix = new Matrix();
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.setRotate(90);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.setRotate(270);
+                break;
+            default:
+        }
+        Bitmap rotate = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        profileImage.setImageBitmap(rotate);
+        sendImage();
     }
+
+}
 

@@ -13,6 +13,9 @@
     <string name="start_record">START RECORD</string>
     <string name="submit">Submit</string>
     <string name="login_phase_1">Login phase 1</string>
+    <string name="take_a_picture_to_sentence_the_sign_up">Take a picture to sentence the sign in</string>
+    <string name="phrase_identification">\"Be yourself, anyone else is already taken.\"</string>
+    <string name="record_the_sentence_to_sign_up">Record the sentence to sign in.</string>
 
 
 </resources>

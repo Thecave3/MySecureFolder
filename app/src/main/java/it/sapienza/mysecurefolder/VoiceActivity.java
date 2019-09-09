@@ -40,6 +40,7 @@ import cafe.adriel.androidaudiorecorder.AndroidAudioRecorder;
 import cafe.adriel.androidaudiorecorder.model.AudioChannel;
 import cafe.adriel.androidaudiorecorder.model.AudioSampleRate;
 import cafe.adriel.androidaudiorecorder.model.AudioSource;
+import it.sapienza.mysecurefolder.user.User;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -52,26 +53,20 @@ public class VoiceActivity extends AppCompatActivity {
     private static final String TAG = RegistrationActivity.class.getSimpleName();
     private static final int RECORD_REQUEST = 2;
 
-
+    private User user;
     private static final int MY_AUDIO_PERMISSION_CODE = 100;
 
-
-    Button audioButton, btnSendRecord;
-    EditText nameEditText;
-
-
-    // Both the ID are taken during name registration and when they need to be passed singularly the field has to be personId
-    String personIdAudio;
+    private String filePath;
+    private Button audioButton;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_registration);
+        setContentView(R.layout.activity_voice);
+        user = (User) getIntent().getSerializableExtra("user");
 
         audioButton = findViewById(R.id.btnStartRecord);
-        btnSendRecord = findViewById(R.id.btnSendRecord);
-
 
         audioButton.setOnClickListener(v -> {
             if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -82,7 +77,6 @@ public class VoiceActivity extends AppCompatActivity {
         });
 
 
-        btnSendRecord.setOnClickListener(view -> sendAudioForEnrollment());
     }
 
 
@@ -92,7 +86,7 @@ public class VoiceActivity extends AppCompatActivity {
         String audioPath = "/" + timeStamp;
         String externalFilePath = Objects.requireNonNull(getExternalFilesDir(Environment.DIRECTORY_MUSIC)).getPath();
 
-        String filePath = externalFilePath + audioPath + ".wav";
+        filePath = externalFilePath + audioPath + ".wav";
 
         Log.d(TAG, filePath);
         int color = ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark);
@@ -114,21 +108,15 @@ public class VoiceActivity extends AppCompatActivity {
     public void sendAudioForEnrollment() {
         //Send audio file to server
         new Thread(() -> {
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ITALIAN).format(new Date());
-            String audioPath = "/" + timeStamp;
-            String externalFilePath = Objects.requireNonNull(getExternalFilesDir(Environment.DIRECTORY_MUSIC)).getPath();
-
-            String filePath = externalFilePath + audioPath + ".wav";
             File audioFileToUpload = new File(filePath);
-
             RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
                     .addFormDataPart("audio", audioFileToUpload.getName(),
                             RequestBody.create(MediaType.parse("audio/wav"), audioFileToUpload))
-                    .addFormDataPart("per sonId", personIdAudio)
+                    .addFormDataPart("personId", user.getAudioId())
                     .build();
 
             Request request = new Request.Builder()
-                    .url(App.getBaseUrl() + "/audio/enrollment")
+                    .url(App.getBaseUrl() + "/audio/verify")
                     .post(requestBody)
                     .build();
 
@@ -140,10 +128,14 @@ public class VoiceActivity extends AppCompatActivity {
 
                 if (responseBody.has("error")) {
                     String error = responseBody.getString("error");
-                    runOnUiThread(() -> {
-                        nameEditText.setEnabled(true);
-                        Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
-                    });
+                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show());
+                } else if (responseBody.has("result")) {
+                    if (responseBody.getString("result").equals("Accepted")) {
+                        // TODO: 09/09/2019 andare avanti 
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "You've been rejected", Toast.LENGTH_LONG).show());
+                    }
+
                 } else {
                     String bodySt = responseBody.toString();
                     runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodySt, Toast.LENGTH_LONG).show());
@@ -151,31 +143,24 @@ public class VoiceActivity extends AppCompatActivity {
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
-        }
-        ).start();
+        }).start();
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case RECORD_REQUEST: {
-                if (resultCode == RESULT_OK) {
-                    recordEnrollment();
-                } else if (resultCode == RESULT_CANCELED) {
-                    Log.d(TAG, "onActivityResult: User has canceled the recording");
-                }
+        if (requestCode == RECORD_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Log.d(TAG, "Saved the audio file.");
+                sendAudioForEnrollment();
 
-                Log.d(TAG, "onActivityResult: User has recorded and saved the audio files");
-                audioButton.setVisibility(View.INVISIBLE);
-                btnSendRecord.setVisibility(View.VISIBLE);
-                break;
+            } else if (resultCode == RESULT_CANCELED) {
+                Log.d(TAG, "User has canceled the recording");
             }
 
-
-            default:
-                Log.e(TAG, "onActivityResult: boh");
+        } else {
+            Log.e(TAG, "onActivityResult: boh");
         }
 
     }

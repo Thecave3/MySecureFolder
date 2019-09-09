@@ -56,14 +56,13 @@ public class CredentialsActivity extends AppCompatActivity {
                         nameEditText.setEnabled(true);
                         Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
                     });
-                } else if (responseBody.has("person")) {
-                    User user = new User(responseBody.getJSONObject("person"));
+                } else if (responseBody.has("name")) {
+                    User user = new User(responseBody);
                     Intent faceIntent = new Intent(CredentialsActivity.this, FaceActivity.class);
                     faceIntent.putExtra("user", user);
                     startActivity(faceIntent);
                 } else {
-                    String result = response.body().string();
-                    new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show());
+                    new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getApplicationContext(), responseBody.toString(), Toast.LENGTH_LONG).show());
                     Log.d(TAG, "Risposta: " + response.message());
                 }
             } catch (IOException | JSONException e) {

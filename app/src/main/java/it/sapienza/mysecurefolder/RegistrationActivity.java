@@ -252,10 +252,8 @@ public class RegistrationActivity extends AppCompatActivity {
                 } else if (responseBody.has("persistedFaceId")) {
                     String persistedFaceId = responseBody.getString("persistedFaceId");
                     runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Face registered! Persistent id: " + persistedFaceId, Toast.LENGTH_LONG).show());
-
                 } else {
-                    String bodySt = responseBody.toString();
-                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodySt, Toast.LENGTH_LONG).show());
+                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Please try again", Toast.LENGTH_LONG).show());
                 }
             } catch (IOException | JSONException e) {
                 e.printStackTrace();

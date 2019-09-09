@@ -1,42 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FaceActivity">
 
-    <TextView
-        android:id="@+id/textPicture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:text="@string/take_a_picture_to_subscribe"
-        android:textSize="24sp"
-        tools:text="Take a picture to sentence the sign up" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <Button
+            android:id="@+id/bottoneFoto"
+            android:layout_width="150dp"
+            android:layout_height="35dp"
+            android:layout_below="@id/mimageView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/rounded_button"
+            android:text="@string/take_a_photo" />
 
-    <ImageView
-        android:id="@+id/mimageView"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_below="@id/textPicture"
-        android:layout_alignParentBottom="false"
-        android:layout_centerInParent="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="116dp"
-        android:contentDescription="@string/registration_photo"
-        app:srcCompat="@drawable/male" />
+        <ImageView
+            android:id="@+id/mimageView"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_below="@id/textPicture"
+            android:layout_alignParentBottom="false"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:contentDescription="@string/registration_photo"
+            app:srcCompat="@drawable/male" />
 
-    <Button
-        android:id="@+id/bottoneFoto"
-        android:layout_width="150dp"
-        android:layout_height="35dp"
-        android:layout_below="@id/mimageView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="114dp"
-        android:background="@drawable/rounded_button"
-        android:text="@string/take_a_photo" />
+        <TextView
+            android:id="@+id/textPicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:text="@string/take_a_picture_to_sentence_the_sign_up"
+            android:textSize="24sp"
+            />
 
-</RelativeLayout>
+    </RelativeLayout>
+</ScrollView>
