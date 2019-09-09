@@ -56,6 +56,8 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private static final int MY_CAMERA_PERMISSION_CODE = 128;
 
+
+
     Button photoButton, saveNameButton, audioButton, btnSendRecord;
     ImageView profileImage;
     EditText nameEditText;
