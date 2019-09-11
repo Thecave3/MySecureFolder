@@ -251,8 +251,12 @@ public class RegistrationActivity extends AppCompatActivity {
                         });
                     } else {
                         String bodySt = responseBody.toString();
-                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Registration completed.", Toast.LENGTH_LONG).show());
-                        startActivity(new Intent(RegistrationActivity.this, InitActivity.class));
+                        if (i == 2) {
+                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Registration completed.", Toast.LENGTH_LONG).show());
+                            finish();
+                        } else {
+                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Audio processed", Toast.LENGTH_LONG).show());
+                        }
                     }
                 } catch (IOException | JSONException e) {
                     e.printStackTrace();

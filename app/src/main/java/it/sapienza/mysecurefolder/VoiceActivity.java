@@ -119,12 +119,13 @@ public class VoiceActivity extends AppCompatActivity {
                     String error = responseBody.getString("error");
                     runOnUiThread(() -> Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show());
                 } else if (responseBody.has("result")) {
+                    Log.d(TAG, responseBody.toString());
                     if (responseBody.getString("result").equals("Accepted")) {
                         Intent galleryIntent = new Intent(VoiceActivity.this, GalleryActivity.class);
                         galleryIntent.putExtra("user", user);
                         startActivity(galleryIntent);
                     } else {
-                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "You've been rejected", Toast.LENGTH_LONG).show());
+                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), resBody, Toast.LENGTH_LONG).show());
                     }
 
                 } else {
