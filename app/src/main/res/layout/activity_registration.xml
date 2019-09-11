@@ -79,7 +79,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:contentDescription="@string/registration_photo"
-            app:srcCompat="@drawable/face_1" />
+            app:srcCompat="@drawable/face_rec" />
 
 
         <Button
