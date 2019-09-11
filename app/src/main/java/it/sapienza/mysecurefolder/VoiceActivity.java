@@ -120,7 +120,7 @@ public class VoiceActivity extends AppCompatActivity {
                     runOnUiThread(() -> Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show());
                 } else if (responseBody.has("result")) {
                     Log.d(TAG, responseBody.toString());
-                    if (responseBody.getString("result").equals("Accepted")) {
+                    if (responseBody.getString("result").equals("Accept")) {
                         Intent galleryIntent = new Intent(VoiceActivity.this, GalleryActivity.class);
                         galleryIntent.putExtra("user", user);
                         startActivity(galleryIntent);
