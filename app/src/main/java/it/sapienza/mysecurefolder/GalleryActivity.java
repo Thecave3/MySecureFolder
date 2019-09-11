@@ -26,18 +26,26 @@ public class GalleryActivity extends AppCompatActivity {
 
         //user = (User) getIntent().getSerializableExtra("user");
 
-        GridView imageGrid = findViewById(R.id.gridview);
+        //GridView imageGrid = findViewById(R.id.gridview);
         ArrayList<Bitmap> bitmapList = new ArrayList<>();
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
 
-//        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.face_1, options));
-//        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.male, options));
-//        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.tre, options));
-//        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.quattro, options));
-//        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.cinque, options));
-
-        imageGrid.setAdapter(new ImageAdapter(this, bitmapList));
+        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.giorgia_1, options));
+        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.giorgia_2, options));
+        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.giorgia_3, options));
+        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.giorgia_4, options));
+        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.giorgia_5, options));
+        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.giusy_1, options));
+        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.idiote, options));
+        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.andreac_1, options));
+        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.andreac_2, options));
+        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.andrea_giorgia, options));
+        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.ilaria_1, options));
+        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.ilaria_2, options));
+        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.ilaria_3, options));
+        bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.pika, options));
+        //imageGrid.setAdapter(new ImageAdapter(this, bitmapList));
     }
 }
 
