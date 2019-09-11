@@ -17,5 +17,8 @@ public class InitActivity extends AppCompatActivity {
         Button login = findViewById(R.id.loginActivity);
         signButton.setOnClickListener(v -> startActivity(new Intent(InitActivity.this, RegistrationActivity.class)));
         login.setOnClickListener(v -> startActivity(new Intent(InitActivity.this, CredentialsActivity.class)));
+        // used just to test gallery activity, don't uncomment
+//        Intent galleryIntent = new Intent(InitActivity.this, GalleryActivity.class);
+//        startActivity(galleryIntent);
     }
 }

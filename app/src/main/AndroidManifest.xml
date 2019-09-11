@@ -3,11 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="it.sapienza.mysecurefolder">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -17,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        <activity android:name=".GalleryActivity"></activity>
         <activity android:name=".RegistrationActivity" />
         <activity android:name=".VoiceActivity" />
         <activity android:name=".FaceActivity" />
@@ -39,5 +35,11 @@
                 android:resource="@xml/file_path" />
         </provider>
     </application>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>
