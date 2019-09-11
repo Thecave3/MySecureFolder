@@ -78,12 +78,18 @@ public class RegistrationActivity extends AppCompatActivity {
         saveNameButton = findViewById(R.id.buttonSave);
         nameEditText = findViewById(R.id.name);
 
+        photoButton.setEnabled(false);
+        audioButton.setEnabled(false);
+        saveNameButton.setEnabled(true);
+
         photoButton.setOnClickListener(v -> {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                     checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_CAMERA_PERMISSION_CODE);
             } else {
                 takePicture();
+
+
             }
         });
 
@@ -100,6 +106,8 @@ public class RegistrationActivity extends AppCompatActivity {
             }
             nameEditText.setEnabled(false);
             createNewPerson(username);
+            photoButton.setEnabled(true);
+            saveNameButton.setEnabled(false);
         });
 
         btnSendRecord.setOnClickListener(view -> sendAudioForEnrollment());
@@ -114,6 +122,8 @@ public class RegistrationActivity extends AppCompatActivity {
                     Uri imageUri = FileProvider.getUriForFile(getApplicationContext(), "com.example.android.fileprovider", imageFile);
                     cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                     startActivityForResult(cameraIntent, IMAGE_REQUEST);
+                    audioButton.setEnabled(true);
+                    photoButton.setEnabled(false);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -162,6 +172,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     String error = responseBody.getString("error");
                     runOnUiThread(() -> {
                         nameEditText.setEnabled(true);
+                        saveNameButton.setEnabled(true);
                         Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
                     });
                 } else {

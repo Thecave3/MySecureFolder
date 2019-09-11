@@ -7,7 +7,7 @@ import okhttp3.OkHttpClient;
 
 public class App extends Application {
 
-    private static final boolean DEBUG_HOME = true;
+    private static final boolean DEBUG_HOME = false;
 
     private static final String BASE_URL = (DEBUG_HOME) ? "http://192.168.1.50:3000" : "https://secure-folder.herokuapp.com";
 

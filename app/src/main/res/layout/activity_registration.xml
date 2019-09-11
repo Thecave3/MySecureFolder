@@ -5,25 +5,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/sfondo"
     android:layout_weight="10">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         tools:context=".InitActivity">
 
         <TextView
             android:id="@+id/textView"
+            android:layout_centerHorizontal="true"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:text="@string/sign_up"
             android:textAlignment="center"
-            android:textColor="@color/design_default_color_primary_dark"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
             android:textSize="40sp"
             android:textStyle="bold" />
 
         <EditText
             android:id="@+id/name"
+            android:textColorHint="@color/white"
+            android:layout_centerHorizontal="true"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_below="@id/textView"
@@ -31,20 +37,25 @@
             android:layout_marginTop="20dp"
             android:layout_marginEnd="10dp"
             android:hint="@string/insert_name"
+            android:textColorHighlight="@color/white"
+            android:textColor="@color/white"
             android:inputType="textPersonName"
             android:importantForAutofill="no" />
 
         <Button
             android:id="@+id/buttonSave"
+            android:layout_below="@id/name"
+            android:backgroundTint="@color/white"
+            android:layout_centerHorizontal="true"
             android:layout_width="300dp"
             android:layout_height="35dp"
-            android:layout_below="@id/name"
-            android:layout_centerHorizontal="true"
+            android:layout_marginTop="32dp"
             android:background="@drawable/rounded_button"
             android:text="@string/save" />
 
         <TextView
             android:id="@+id/textPicture"
+            android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/buttonSave"
@@ -61,11 +72,12 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:contentDescription="@string/registration_photo"
-            app:srcCompat="@drawable/male" />
+            app:srcCompat="@drawable/face_1" />
 
 
         <Button
             android:id="@+id/bottoneFoto"
+            android:backgroundTint="@color/white"
             android:layout_width="150dp"
             android:layout_height="35dp"
             android:layout_below="@id/mimageView"
@@ -76,6 +88,7 @@
 
         <TextView
             android:id="@+id/textRecord"
+            android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/bottoneFoto"
@@ -85,12 +98,24 @@
             android:text="@string/do_the_three_enrollments"
             android:textSize="20sp" />
 
+        <TextView
+            android:id="@+id/subTextRecord"
+            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textRecord"
+            android:layout_centerHorizontal="true"
+            android:textAlignment="center"
+            android:layout_marginTop="10dp"
+            android:text="@string/phrase_identification"
+            android:textSize="20dp" />
 
         <Button
             android:id="@+id/btnStartRecord"
+            android:backgroundTint="@color/white"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/textRecord"
+            android:layout_below="@id/subTextRecord"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:background="@drawable/rounded_button"

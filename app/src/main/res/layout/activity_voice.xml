@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/sfondo"
     tools:context=".VoiceActivity">
 
 
@@ -13,7 +14,7 @@
         android:layout_below="@id/subTextRecord"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="47dp"
-        android:background="@drawable/rounded_button"
+        android:background="@color/white"
         android:text="@string/start_record" />
 
     <TextView
@@ -24,6 +25,7 @@
         android:layout_marginTop="200dp"
         android:text="@string/record_the_sentence_to_sign_up"
         android:textAlignment="center"
+        android:textColor="@color/white"
         android:textSize="20sp" />
 
     <TextView
@@ -35,6 +37,7 @@
         android:layout_marginTop="20dp"
         android:text="@string/phrase_identification"
         android:textAlignment="center"
+        android:textColor="@color/white"
         android:textSize="20sp" />
 
 </RelativeLayout>

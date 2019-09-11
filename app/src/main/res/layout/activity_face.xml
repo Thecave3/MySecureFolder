@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/sfondo"
     tools:context=".FaceActivity">
 
     <RelativeLayout
@@ -16,8 +17,8 @@
             android:layout_height="35dp"
             android:layout_below="@id/mimageView"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/rounded_button"
+            android:layout_marginTop="40dp"
+            android:background="@color/white"
             android:text="@string/take_a_photo" />
 
         <ImageView
@@ -30,15 +31,16 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:contentDescription="@string/registration_photo"
-            app:srcCompat="@drawable/male" />
+            app:srcCompat="@drawable/face_1" />
 
         <TextView
             android:id="@+id/textPicture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:text="@string/take_a_picture_to_sentence_the_sign_up"
+            android:layout_marginTop="50dp"
+            android:textColor="@color/white"
+            android:text="@string/take_a_picture_to_sign_up"
             android:textSize="24sp"
             />
 
