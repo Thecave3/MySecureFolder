@@ -199,7 +199,7 @@ public class RegistrationActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Name accepted", Toast.LENGTH_LONG).show();
                             progressBar1.setVisibility(View.INVISIBLE);
                             saveNameButton.setVisibility(View.VISIBLE);
-                            saveNameButton.setClickable(false);
+                            saveNameButton.setEnabled(false);
                         });
                     } else {
                         String bodyStr = responseBody.toString();
@@ -256,7 +256,10 @@ public class RegistrationActivity extends AppCompatActivity {
                             nameEditText.setEnabled(true);
                             Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
                             progressBar3.setVisibility(View.INVISIBLE);
-                            sendRecordButton.setVisibility(View.VISIBLE);
+                            sendRecordButton.setVisibility(View.INVISIBLE);
+                            sendRecordButton.setEnabled(false);
+                            audioButton.setEnabled(true);
+                            audioButton.setVisibility(View.VISIBLE);
                         });
                     } else {
                         String bodySt = responseBody.toString();
@@ -307,6 +310,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
                         progressBar2.setVisibility(View.INVISIBLE);
                         photoButton.setVisibility(View.VISIBLE);
+                        photoButton.setEnabled(true);
                     });
                 } else if (responseBody.has("persistedFaceId")) {
                     runOnUiThread(() -> {
@@ -315,7 +319,12 @@ public class RegistrationActivity extends AppCompatActivity {
                         photoButton.setVisibility(View.VISIBLE);
                     });
                 } else {
-                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Please try again", Toast.LENGTH_LONG).show());
+                    runOnUiThread(() -> {
+                        progressBar2.setVisibility(View.INVISIBLE);
+                        photoButton.setVisibility(View.VISIBLE);
+                        photoButton.setEnabled(true);
+                        Toast.makeText(getApplicationContext(), "Please try again", Toast.LENGTH_LONG).show();
+                    });
                 }
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
