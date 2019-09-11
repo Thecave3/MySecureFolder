@@ -12,17 +12,17 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/bottoneFoto"
+            android:id="@+id/buttonPhoto"
             android:layout_width="200dp"
             android:layout_height="35dp"
-            android:layout_below="@id/mimageView"
+            android:layout_below="@id/imageView"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="40dp"
             android:background="@drawable/rounded_button"
             android:text="@string/take_a_photo" />
 
         <ImageView
-            android:id="@+id/mimageView"
+            android:id="@+id/imageView"
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:layout_below="@id/textPicture"
@@ -33,16 +33,23 @@
             android:contentDescription="@string/registration_photo"
             app:srcCompat="@drawable/face_1" />
 
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/imageView"
+            android:layout_centerHorizontal="true"
+            android:visibility="invisible" />
+
         <TextView
             android:id="@+id/textPicture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="50dp"
-            android:textColor="@color/white"
             android:text="@string/take_a_picture_to_sign_up"
-            android:textSize="24sp"
-            />
+            android:textColor="@color/white"
+            android:textSize="24sp" />
 
     </RelativeLayout>
 </ScrollView>

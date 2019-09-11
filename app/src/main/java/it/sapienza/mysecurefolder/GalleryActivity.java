@@ -3,9 +3,8 @@ package it.sapienza.mysecurefolder;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -26,7 +25,7 @@ public class GalleryActivity extends AppCompatActivity {
 
         user = (User) getIntent().getSerializableExtra("user");
 
-        //GridView imageGrid = findViewById(R.id.gridview);
+        GridView imageGrid = findViewById(R.id.gridview);
         ArrayList<Bitmap> bitmapList = new ArrayList<>();
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
@@ -45,7 +44,7 @@ public class GalleryActivity extends AppCompatActivity {
         bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.ilaria_2, options));
         bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.ilaria_3, options));
         bitmapList.add(BitmapFactory.decodeResource(getResources(), R.drawable.pika, options));
-        //imageGrid.setAdapter(new ImageAdapter(this, bitmapList));
+        imageGrid.setAdapter(new ImageAdapter(this, bitmapList));
     }
 }
 

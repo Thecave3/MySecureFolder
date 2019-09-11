@@ -2,13 +2,12 @@ package it.sapienza.mysecurefolder;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -28,6 +27,8 @@ public class CredentialsActivity extends AppCompatActivity {
     private final static String TAG = CredentialsActivity.class.getSimpleName();
     EditText nameEditText;
     Button submitButton;
+    ProgressBar progressBar;
+    CredentialsActivity self;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +36,9 @@ public class CredentialsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_credentials);
         nameEditText = findViewById(R.id.insertName);
         submitButton = findViewById(R.id.submitName);
+        progressBar = findViewById(R.id.progress_bar);
         submitButton.setOnClickListener(v -> sendCredentials(nameEditText.getText().toString()));
+        self = this;
     }
 
     /**
@@ -45,6 +48,8 @@ public class CredentialsActivity extends AppCompatActivity {
      *
      */
     private void sendCredentials(String name) {
+        submitButton.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
         new Thread(() -> {
             RequestBody formBody = new FormBody.Builder()
                     .add("name", name)
@@ -61,15 +66,23 @@ public class CredentialsActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         nameEditText.setEnabled(true);
                         Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                        submitButton.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.INVISIBLE);
                     });
                 } else if (responseBody.has("name")) {
                     User user = new User(responseBody);
                     Intent faceIntent = new Intent(CredentialsActivity.this, FaceActivity.class);
                     faceIntent.putExtra("user", user);
                     startActivity(faceIntent);
+                    self.finish();
                 } else {
-                    new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getApplicationContext(), responseBody.toString(), Toast.LENGTH_LONG).show());
-                    Log.d(TAG, "Risposta: " + response.message());
+                    runOnUiThread(()->{
+                        Toast.makeText(getApplicationContext(), responseBody.toString(), Toast.LENGTH_LONG).show();
+                        Log.d(TAG, "Risposta: " + response.message());
+                        nameEditText.setEnabled(true);
+                        submitButton.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.INVISIBLE);
+                    });
                 }
             } catch (IOException | JSONException e) {
                 e.printStackTrace();

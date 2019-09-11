@@ -13,8 +13,10 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.exifinterface.media.ExifInterface;
@@ -45,7 +47,9 @@ public class FaceActivity extends AppCompatActivity {
     private ImageView profileImage;
     private Button photoButton;
     private static final int MY_CAMERA_PERMISSION_CODE = 128;
-    String currentImagePath;
+    private String currentImagePath;
+    private ProgressBar progressBar;
+    private FaceActivity self;
 
 
     @Override
@@ -53,8 +57,9 @@ public class FaceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_face);
         user = (User) getIntent().getSerializableExtra("user");
-        photoButton = findViewById(R.id.bottoneFoto);
-        profileImage = findViewById(R.id.mimageView);
+        photoButton = findViewById(R.id.buttonPhoto);
+        profileImage = findViewById(R.id.imageView);
+        progressBar = findViewById(R.id.progress_bar);
 
         photoButton.setOnClickListener(v -> {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -63,11 +68,13 @@ public class FaceActivity extends AppCompatActivity {
                 takePicture();
             }
         });
+
+        self = this;
+
     }
 
     /**
      * Take a picture in order to send it to the server
-     *
      */
     private void takePicture() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -101,6 +108,9 @@ public class FaceActivity extends AppCompatActivity {
      */
     private void sendImage() {
         new Thread(() -> {
+            photoButton.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+
             File fileToUpload = new File(currentImagePath);
             RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
                     .addFormDataPart("face", fileToUpload.getName(),
@@ -113,7 +123,11 @@ public class FaceActivity extends AppCompatActivity {
                     .post(requestBody)
                     .build();
 
-            final Runnable please_try_again = () -> Toast.makeText(getApplicationContext(), "Please try again", Toast.LENGTH_LONG).show();
+            final Runnable please_try_again = () -> {
+                Toast.makeText(getApplicationContext(), "Please try again", Toast.LENGTH_LONG).show();
+                photoButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
+            };
             try {
                 Response response = App.getHTTPClient().newCall(request).execute();
                 assert response.body() != null;
@@ -124,7 +138,11 @@ public class FaceActivity extends AppCompatActivity {
                     JSONObject responseBody = responseArray.getJSONObject(0);
                     if (responseBody.has("error")) {
                         String error = responseBody.getString("error");
-                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show());
+                        runOnUiThread(() -> {
+                            Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                            photoButton.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.INVISIBLE);
+                        });
                     } else {
                         //String bodySt = responseBody.toString();
                         //runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodySt, Toast.LENGTH_LONG).show());
@@ -169,13 +187,23 @@ public class FaceActivity extends AppCompatActivity {
 
             if (responseVerifyBody.has("error")) {
                 String error = responseVerifyBody.getString("error");
-                runOnUiThread(() -> Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show());
+                runOnUiThread(() -> {
+                    Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                    photoButton.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.INVISIBLE);
+                });
+
             } else if (responseVerifyBody.has("isIdentical") && responseVerifyBody.getBoolean("isIdentical")) {
                 Intent voiceIntent = new Intent(FaceActivity.this, VoiceActivity.class);
                 voiceIntent.putExtra("user", user);
                 startActivity(voiceIntent);
+                self.finish();
             } else {
-                runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Please try again, response: " + responseVerify, Toast.LENGTH_LONG).show());
+                runOnUiThread(() -> {
+                    Toast.makeText(getApplicationContext(), "Please try again, response: " + responseVerify, Toast.LENGTH_LONG).show();
+                    photoButton.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.INVISIBLE);
+                });
             }
         } catch (IOException | JSONException e) {
             e.printStackTrace();

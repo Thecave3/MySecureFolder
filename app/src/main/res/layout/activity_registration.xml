@@ -52,6 +52,14 @@
             android:background="@drawable/rounded_button"
             android:text="@string/save" />
 
+        <ProgressBar
+            android:id="@+id/progress_bar1"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/name"
+            android:layout_centerHorizontal="true"/>
+
         <TextView
             android:id="@+id/textPicture"
             android:textColor="@color/white"
@@ -64,7 +72,7 @@
             android:textSize="24sp" />
 
         <ImageView
-            android:id="@+id/mimageView"
+            android:id="@+id/imageView"
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:layout_below="@id/textPicture"
@@ -75,21 +83,29 @@
 
 
         <Button
-            android:id="@+id/bottoneFoto"
+            android:id="@+id/buttonPhoto"
             android:layout_width="150dp"
             android:layout_height="35dp"
-            android:layout_below="@id/mimageView"
+            android:layout_below="@id/imageView"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
             android:background="@drawable/rounded_button"
             android:text="@string/take_a_photo" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar2"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/imageView"
+            android:layout_centerHorizontal="true"/>
 
         <TextView
             android:id="@+id/textRecord"
             android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/bottoneFoto"
+            android:layout_below="@id/buttonPhoto"
             android:layout_centerHorizontal="true"
             android:textAlignment="center"
             android:layout_marginTop="20dp"
@@ -106,7 +122,7 @@
             android:textAlignment="center"
             android:layout_marginTop="10dp"
             android:text="@string/phrase_identification"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
         <Button
             android:id="@+id/btnStartRecord"
@@ -129,9 +145,13 @@
             android:background="@drawable/rounded_button"
             android:text="@string/send_records" />
 
-
-
-
+        <ProgressBar
+            android:id="@+id/progress_bar3"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/subTextRecord"
+            android:layout_centerHorizontal="true"/>
 
     </RelativeLayout>
 </ScrollView>

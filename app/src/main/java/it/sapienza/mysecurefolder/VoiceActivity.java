@@ -8,7 +8,9 @@ import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -34,14 +36,17 @@ import okhttp3.Response;
 
 public class VoiceActivity extends AppCompatActivity {
 
+    private static final int MY_AUDIO_PERMISSION_CODE = 100;
     private static final String TAG = RegistrationActivity.class.getSimpleName();
     private static final int RECORD_REQUEST = 2;
 
     private User user;
-    private static final int MY_AUDIO_PERMISSION_CODE = 100;
-
     private String filePath;
+
     private Button audioButton;
+    private ProgressBar progressBar;
+
+    private VoiceActivity self;
 
 
     @Override
@@ -50,6 +55,7 @@ public class VoiceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_voice);
         user = (User) getIntent().getSerializableExtra("user");
 
+        progressBar = findViewById(R.id.progress_bar);
         audioButton = findViewById(R.id.btnStartRecord);
 
         audioButton.setOnClickListener(v -> {
@@ -60,12 +66,11 @@ public class VoiceActivity extends AppCompatActivity {
             }
         });
 
-
+        self = this;
     }
 
     /**
      * Records an enrollment in order to verify the correspondence with the audio features on server
-     *
      */
     private void recordEnrollment() {
 
@@ -95,6 +100,8 @@ public class VoiceActivity extends AppCompatActivity {
      * Sends and enrollment audio recorded to the server
      */
     public void sendAudioForEnrollment() {
+        progressBar.setVisibility(View.VISIBLE);
+        audioButton.setVisibility(View.INVISIBLE);
         //Send audio file to server
         new Thread(() -> {
             File audioFileToUpload = new File(filePath);
@@ -117,20 +124,32 @@ public class VoiceActivity extends AppCompatActivity {
 
                 if (responseBody.has("error")) {
                     String error = responseBody.getString("error");
-                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show());
+                    runOnUiThread(() -> {
+                        Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                        progressBar.setVisibility(View.INVISIBLE);
+                        audioButton.setVisibility(View.VISIBLE);
+                    });
                 } else if (responseBody.has("result")) {
                     Log.d(TAG, responseBody.toString());
                     if (responseBody.getString("result").equals("Accept")) {
                         Intent galleryIntent = new Intent(VoiceActivity.this, GalleryActivity.class);
                         galleryIntent.putExtra("user", user);
                         startActivity(galleryIntent);
+                        self.finish();
                     } else {
-                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), resBody, Toast.LENGTH_LONG).show());
+                        runOnUiThread(() -> {
+                            Toast.makeText(getApplicationContext(), resBody, Toast.LENGTH_LONG).show();
+                            progressBar.setVisibility(View.INVISIBLE);
+                            audioButton.setVisibility(View.VISIBLE);
+                        });
                     }
-
                 } else {
                     String bodySt = responseBody.toString();
-                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodySt, Toast.LENGTH_LONG).show());
+                    runOnUiThread(() -> {
+                        Toast.makeText(getApplicationContext(), bodySt, Toast.LENGTH_LONG).show();
+                        progressBar.setVisibility(View.INVISIBLE);
+                        audioButton.setVisibility(View.VISIBLE);
+                    });
                 }
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
@@ -146,16 +165,12 @@ public class VoiceActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 Log.d(TAG, "Saved the audio file.");
                 sendAudioForEnrollment();
-
             } else if (resultCode == RESULT_CANCELED) {
                 Log.d(TAG, "User has canceled the recording");
             }
-
         } else {
             Log.e(TAG, "onActivityResult: boh");
         }
 
     }
-
-
 }

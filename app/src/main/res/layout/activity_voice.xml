@@ -40,4 +40,12 @@
         android:textColor="@color/white"
         android:textSize="20sp" />
 
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/subTextRecord"
+        android:layout_centerHorizontal="true"/>
+
 </RelativeLayout>

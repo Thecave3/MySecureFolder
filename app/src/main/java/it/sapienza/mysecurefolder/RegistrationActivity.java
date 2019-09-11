@@ -6,28 +6,24 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-
-import androidx.exifinterface.media.ExifInterface;
-
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.exifinterface.media.ExifInterface;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,9 +56,10 @@ public class RegistrationActivity extends AppCompatActivity {
     private static final int MY_CAMERA_PERMISSION_CODE = 128;
 
 
-    Button photoButton, saveNameButton, audioButton, btnSendRecord;
+    Button photoButton, saveNameButton, audioButton, sendRecordButton;
     ImageView profileImage;
     EditText nameEditText;
+    ProgressBar progressBar1, progressBar2, progressBar3;
 
     // Both the ID are taken during name registration and when they need to be passed singularly the field has to be personId
     String personIdFace, personIdAudio, currentImagePath;
@@ -74,27 +71,26 @@ public class RegistrationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_registration);
 
         audioButton = findViewById(R.id.btnStartRecord);
-        btnSendRecord = findViewById(R.id.btnSendRecord);
-        profileImage = findViewById(R.id.mimageView);
-        photoButton = findViewById(R.id.bottoneFoto);
+        sendRecordButton = findViewById(R.id.btnSendRecord);
+        profileImage = findViewById(R.id.imageView);
+        photoButton = findViewById(R.id.buttonPhoto);
         saveNameButton = findViewById(R.id.buttonSave);
         nameEditText = findViewById(R.id.name);
+
+        progressBar1 = findViewById(R.id.progress_bar1);
+        progressBar2 = findViewById(R.id.progress_bar2);
+        progressBar3 = findViewById(R.id.progress_bar3);
 
         photoButton.setEnabled(false);
         audioButton.setEnabled(false);
         saveNameButton.setEnabled(true);
 
-
         photoButton.setOnClickListener(v -> {
-
-
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                     checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_CAMERA_PERMISSION_CODE);
             } else {
                 takePicture();
-
-
             }
         });
 
@@ -115,9 +111,7 @@ public class RegistrationActivity extends AppCompatActivity {
             saveNameButton.setEnabled(false);
         });
 
-        btnSendRecord.setOnClickListener(view -> sendAudioForEnrollment());
-
-
+        sendRecordButton.setOnClickListener(view -> sendAudioForEnrollment());
     }
 
 
@@ -148,7 +142,6 @@ public class RegistrationActivity extends AppCompatActivity {
      * Records an enrollment in order to create the audio features on server
      */
     private void recordEnrollment() {
-
         String audioPath = "/" + records;
         String externalFilePath = Objects.requireNonNull(getExternalFilesDir(Environment.DIRECTORY_MUSIC)).getPath();
 
@@ -176,8 +169,9 @@ public class RegistrationActivity extends AppCompatActivity {
      * @param username name of the user
      */
     private void createNewPerson(String username) {
+        progressBar1.setVisibility(View.VISIBLE);
+        saveNameButton.setVisibility(View.INVISIBLE);
         new Thread(() -> {
-
             RequestBody formBody = new FormBody.Builder()
                     .add("name", username)
                     .build();
@@ -194,16 +188,27 @@ public class RegistrationActivity extends AppCompatActivity {
                         nameEditText.setEnabled(true);
                         saveNameButton.setEnabled(true);
                         Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                        progressBar1.setVisibility(View.INVISIBLE);
+                        saveNameButton.setVisibility(View.VISIBLE);
                     });
                 } else {
                     if (responseBody.has("personIdFace") && responseBody.has("verificationProfileId")) {
                         personIdFace = responseBody.getString("personIdFace");
                         personIdAudio = responseBody.getString("verificationProfileId");
-                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Name accepted", Toast.LENGTH_LONG).show());
+                        runOnUiThread(() -> {
+                            Toast.makeText(getApplicationContext(), "Name accepted", Toast.LENGTH_LONG).show();
+                            progressBar1.setVisibility(View.INVISIBLE);
+                            saveNameButton.setVisibility(View.VISIBLE);
+                            saveNameButton.setClickable(false);
+                        });
                     } else {
                         String bodyStr = responseBody.toString();
                         Log.d(TAG, bodyStr);
-                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodyStr, Toast.LENGTH_LONG).show());
+                        runOnUiThread(() -> {
+                            Toast.makeText(getApplicationContext(), bodyStr, Toast.LENGTH_LONG).show();
+                            progressBar1.setVisibility(View.INVISIBLE);
+                            saveNameButton.setVisibility(View.VISIBLE);
+                        });
                     }
                     saveNameButton.setEnabled(false);
                 }
@@ -217,6 +222,8 @@ public class RegistrationActivity extends AppCompatActivity {
      * Sends the audio taken before to the server in order to enroll and extract the feature
      */
     public void sendAudioForEnrollment() {
+        progressBar3.setVisibility(View.VISIBLE);
+        sendRecordButton.setVisibility(View.INVISIBLE);
         //Send audio file to server
         new Thread(() -> {
             for (int i = 0; i < 3; i++) {
@@ -248,14 +255,17 @@ public class RegistrationActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             nameEditText.setEnabled(true);
                             Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                            progressBar3.setVisibility(View.INVISIBLE);
+                            sendRecordButton.setVisibility(View.VISIBLE);
                         });
                     } else {
                         String bodySt = responseBody.toString();
                         if (i == 2) {
-                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Registration completed.", Toast.LENGTH_LONG).show());
+                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Registration completed", Toast.LENGTH_LONG).show());
                             finish();
                         } else {
-                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Audio processed", Toast.LENGTH_LONG).show());
+                            int step = i + 1;
+                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Audio n." + step + " processed", Toast.LENGTH_LONG).show());
                         }
                     }
                 } catch (IOException | JSONException e) {
@@ -269,6 +279,8 @@ public class RegistrationActivity extends AppCompatActivity {
      * Sends the picture taken before to the server in order to extract feature
      */
     private void sendImage() {
+        progressBar2.setVisibility(View.VISIBLE);
+        photoButton.setVisibility(View.INVISIBLE);
         new Thread(() -> {
             File fileToUpload = new File(currentImagePath);
             RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
@@ -291,10 +303,17 @@ public class RegistrationActivity extends AppCompatActivity {
 
                 if (responseBody.has("error")) {
                     String error = responseBody.getString("error");
-                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show());
+                    runOnUiThread(() -> {
+                        Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                        progressBar2.setVisibility(View.INVISIBLE);
+                        photoButton.setVisibility(View.VISIBLE);
+                    });
                 } else if (responseBody.has("persistedFaceId")) {
-                    String persistedFaceId = responseBody.getString("persistedFaceId");
-                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Face registered!", Toast.LENGTH_LONG).show());
+                    runOnUiThread(() -> {
+                        Toast.makeText(getApplicationContext(), "Face registered!", Toast.LENGTH_LONG).show();
+                        progressBar2.setVisibility(View.INVISIBLE);
+                        photoButton.setVisibility(View.VISIBLE);
+                    });
                 } else {
                     runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Please try again", Toast.LENGTH_LONG).show());
                 }
@@ -338,7 +357,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
                 Log.d(TAG, "onActivityResult: User has recorded and saved the audio files");
                 audioButton.setVisibility(View.INVISIBLE);
-                btnSendRecord.setVisibility(View.VISIBLE);
+                sendRecordButton.setVisibility(View.VISIBLE);
                 break;
             }
 

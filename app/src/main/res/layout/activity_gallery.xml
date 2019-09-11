@@ -2,21 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-<!--    <GridView-->
-<!--        android:id="@+id/gridview"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:columnWidth="100dp"-->
-<!--        android:gravity="center"-->
-<!--        android:numColumns="2"-->
-<!--        android:verticalSpacing="24dp"-->
-<!--        android:horizontalSpacing="10dp"-->
-<!--        android:adjustViewBounds="true"-->
-<!--        android:stretchMode="spacingWidthUniform"/>-->
 
-    <ImageView
+    <GridView
+        android:id="@+id/gridview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/ilaria_1"
-        android:contentDescription="@string/scema" />
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:columnWidth="100dp"
+        android:gravity="center"
+        android:horizontalSpacing="10dp"
+        android:numColumns="3"
+        android:stretchMode="spacingWidthUniform"
+        android:verticalSpacing="24dp" />
 </LinearLayout>
