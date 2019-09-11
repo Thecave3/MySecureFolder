@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".GalleryActivity"></activity>
+        <activity android:name=".GalleryActivity" />
         <activity android:name=".RegistrationActivity" />
         <activity android:name=".VoiceActivity" />
         <activity android:name=".FaceActivity" />
