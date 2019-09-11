@@ -24,7 +24,7 @@ public class GalleryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
-        //user = (User) getIntent().getSerializableExtra("user");
+        user = (User) getIntent().getSerializableExtra("user");
 
         //GridView imageGrid = findViewById(R.id.gridview);
         ArrayList<Bitmap> bitmapList = new ArrayList<>();

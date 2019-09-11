@@ -38,6 +38,12 @@ public class CredentialsActivity extends AppCompatActivity {
         submitButton.setOnClickListener(v -> sendCredentials(nameEditText.getText().toString()));
     }
 
+    /**
+     * Sends the user name and every other possible fields for identification to the server in order to retrieve the FaceId and the VoiceId
+     *
+     * @param name name representing the user
+     *
+     */
     private void sendCredentials(String name) {
         new Thread(() -> {
             RequestBody formBody = new FormBody.Builder()

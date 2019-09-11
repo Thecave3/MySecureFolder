@@ -57,7 +57,6 @@ public class RegistrationActivity extends AppCompatActivity {
     private static final int MY_CAMERA_PERMISSION_CODE = 128;
 
 
-
     Button photoButton, saveNameButton, audioButton, btnSendRecord;
     ImageView profileImage;
     EditText nameEditText;
@@ -113,6 +112,10 @@ public class RegistrationActivity extends AppCompatActivity {
         btnSendRecord.setOnClickListener(view -> sendAudioForEnrollment());
     }
 
+
+    /**
+     * Take a picture in order to create the face features on server
+     */
     private void takePicture() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (cameraIntent.resolveActivity(getPackageManager()) != null) {
@@ -132,6 +135,10 @@ public class RegistrationActivity extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * Records an enrollment in order to create the audio features on server
+     */
     private void recordEnrollment() {
 
         String audioPath = "/" + records;
@@ -155,6 +162,11 @@ public class RegistrationActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Create new person in the database
+     *
+     * @param username name of the user
+     */
     private void createNewPerson(String username) {
         new Thread(() -> {
 
@@ -192,6 +204,9 @@ public class RegistrationActivity extends AppCompatActivity {
         }).start();
     }
 
+    /**
+     * Sends the audio taken before to the server in order to enroll and extract the feature
+     */
     public void sendAudioForEnrollment() {
         //Send audio file to server
         new Thread(() -> {
@@ -236,6 +251,9 @@ public class RegistrationActivity extends AppCompatActivity {
         }).start();
     }
 
+    /**
+     * Sends the picture taken before to the server in order to extract feature
+     */
     private void sendImage() {
         new Thread(() -> {
             File fileToUpload = new File(currentImagePath);
@@ -272,6 +290,12 @@ public class RegistrationActivity extends AppCompatActivity {
         }).start();
     }
 
+    /**
+     * Take the picture from the external storage, used just to save the picture locally before sending it
+     *
+     * @return file representing the picture taken before
+     * @throws IOException if the file is not found or if the external folder does not exists
+     */
     private File getImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ITALIAN).format(new Date());
         String imageName = "jpeg_" + timeStamp + "_";

@@ -1,33 +1,23 @@
 package it.sapienza.mysecurefolder;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.widget.ImageView;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-
-import androidx.exifinterface.media.ExifInterface;
-
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.exifinterface.media.ExifInterface;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,14 +30,12 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
+import it.sapienza.mysecurefolder.user.User;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
-
-import it.sapienza.mysecurefolder.user.User;
 
 public class FaceActivity extends AppCompatActivity {
 
@@ -77,6 +65,10 @@ public class FaceActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Take a picture in order to send it to the server
+     *
+     */
     private void takePicture() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (cameraIntent.resolveActivity(getPackageManager()) != null) {
@@ -103,6 +95,10 @@ public class FaceActivity extends AppCompatActivity {
         return imageFile;
     }
 
+    /**
+     * Sends a picture in order to detect the facial features
+     * If a face is detected than the flow goes on to verify the picture with the person
+     */
     private void sendImage() {
         new Thread(() -> {
             File fileToUpload = new File(currentImagePath);
@@ -145,6 +141,11 @@ public class FaceActivity extends AppCompatActivity {
         }).start();
     }
 
+    /**
+     * Verify the correspondence between user and picture
+     *
+     * @param faceId id representing the picture
+     */
     private void verify(String faceId) {
         JSONObject body = new JSONObject();
         try {

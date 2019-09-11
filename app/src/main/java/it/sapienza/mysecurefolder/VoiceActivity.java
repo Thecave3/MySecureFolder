@@ -3,27 +3,12 @@ package it.sapienza.mysecurefolder;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-
-import androidx.exifinterface.media.ExifInterface;
-
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -41,7 +26,6 @@ import cafe.adriel.androidaudiorecorder.model.AudioChannel;
 import cafe.adriel.androidaudiorecorder.model.AudioSampleRate;
 import cafe.adriel.androidaudiorecorder.model.AudioSource;
 import it.sapienza.mysecurefolder.user.User;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
@@ -79,7 +63,10 @@ public class VoiceActivity extends AppCompatActivity {
 
     }
 
-
+    /**
+     * Records an enrollment in order to verify the correspondence with the audio features on server
+     *
+     */
     private void recordEnrollment() {
 
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ITALIAN).format(new Date());
@@ -104,7 +91,9 @@ public class VoiceActivity extends AppCompatActivity {
 
     }
 
-
+    /**
+     * Sends and enrollment audio recorded to the server
+     */
     public void sendAudioForEnrollment() {
         //Send audio file to server
         new Thread(() -> {
