@@ -45,7 +45,6 @@
         <Button
             android:id="@+id/buttonSave"
             android:layout_below="@id/name"
-            android:backgroundTint="@color/white"
             android:layout_centerHorizontal="true"
             android:layout_width="300dp"
             android:layout_height="35dp"
@@ -77,7 +76,6 @@
 
         <Button
             android:id="@+id/bottoneFoto"
-            android:backgroundTint="@color/white"
             android:layout_width="150dp"
             android:layout_height="35dp"
             android:layout_below="@id/mimageView"
@@ -112,7 +110,6 @@
 
         <Button
             android:id="@+id/btnStartRecord"
-            android:backgroundTint="@color/white"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/subTextRecord"
@@ -126,7 +123,7 @@
             android:layout_width="200dp"
             android:visibility="invisible"
             android:layout_height="wrap_content"
-            android:layout_below="@id/textRecord"
+            android:layout_below="@id/subTextRecord"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:background="@drawable/rounded_button"

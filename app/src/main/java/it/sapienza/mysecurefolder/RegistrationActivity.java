@@ -9,6 +9,7 @@ import android.graphics.Matrix;
 
 import androidx.exifinterface.media.ExifInterface;
 
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -20,7 +21,9 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -81,7 +84,10 @@ public class RegistrationActivity extends AppCompatActivity {
         audioButton.setEnabled(false);
         saveNameButton.setEnabled(true);
 
+
         photoButton.setOnClickListener(v -> {
+
+
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                     checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_CAMERA_PERMISSION_CODE);
@@ -110,6 +116,8 @@ public class RegistrationActivity extends AppCompatActivity {
         });
 
         btnSendRecord.setOnClickListener(view -> sendAudioForEnrollment());
+
+
     }
 
 
@@ -191,12 +199,13 @@ public class RegistrationActivity extends AppCompatActivity {
                     if (responseBody.has("personIdFace") && responseBody.has("verificationProfileId")) {
                         personIdFace = responseBody.getString("personIdFace");
                         personIdAudio = responseBody.getString("verificationProfileId");
-                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Your person id for face is " + personIdFace + ".\nYour person id for audio is " + personIdAudio, Toast.LENGTH_LONG).show());
+                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Name accepted", Toast.LENGTH_LONG).show());
                     } else {
                         String bodyStr = responseBody.toString();
                         Log.d(TAG, bodyStr);
                         runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodyStr, Toast.LENGTH_LONG).show());
                     }
+                    saveNameButton.setEnabled(false);
                 }
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
@@ -242,7 +251,8 @@ public class RegistrationActivity extends AppCompatActivity {
                         });
                     } else {
                         String bodySt = responseBody.toString();
-                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), bodySt, Toast.LENGTH_LONG).show());
+                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Registration completed.", Toast.LENGTH_LONG).show());
+                        startActivity(new Intent(RegistrationActivity.this, InitActivity.class));
                     }
                 } catch (IOException | JSONException e) {
                     e.printStackTrace();
@@ -280,7 +290,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     runOnUiThread(() -> Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show());
                 } else if (responseBody.has("persistedFaceId")) {
                     String persistedFaceId = responseBody.getString("persistedFaceId");
-                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Face registered! Persistent id: " + persistedFaceId, Toast.LENGTH_LONG).show());
+                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Face registered!", Toast.LENGTH_LONG).show());
                 } else {
                     runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Please try again", Toast.LENGTH_LONG).show());
                 }
@@ -372,4 +382,6 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         }
     }
+
+
 }

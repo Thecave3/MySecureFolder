@@ -14,7 +14,7 @@
         android:layout_below="@id/subTextRecord"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="47dp"
-        android:background="@color/white"
+        android:background="@drawable/rounded_button"
         android:text="@string/start_record" />
 
     <TextView
