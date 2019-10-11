@@ -45,7 +45,7 @@ public class FaceActivity extends AppCompatActivity {
     private static final String TAG = CredentialsActivity.class.getSimpleName();
     private static final int IMAGE_REQUEST = 1;
     private ImageView profileImage;
-    private Button photoButton;
+    private Button photoButton, skipButton;
     private static final int MY_CAMERA_PERMISSION_CODE = 128;
     private String currentImagePath;
     private ProgressBar progressBar;
@@ -60,6 +60,8 @@ public class FaceActivity extends AppCompatActivity {
         photoButton = findViewById(R.id.buttonPhoto);
         profileImage = findViewById(R.id.imageView);
         progressBar = findViewById(R.id.progress_bar);
+        skipButton = findViewById(R.id.buttonSkip);
+
 
         photoButton.setOnClickListener(v -> {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -70,6 +72,13 @@ public class FaceActivity extends AppCompatActivity {
         });
 
         self = this;
+
+        skipButton.setOnClickListener(view -> {
+            Intent voiceIntent = new Intent(FaceActivity.this, VoiceActivity.class);
+            voiceIntent.putExtra("user", user);
+            startActivity(voiceIntent);
+            self.finish();
+        });
 
     }
 
