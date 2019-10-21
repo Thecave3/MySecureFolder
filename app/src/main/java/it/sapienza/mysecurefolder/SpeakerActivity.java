@@ -34,7 +34,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class VoiceActivity extends AppCompatActivity {
+public class SpeakerActivity extends AppCompatActivity {
 
     private static final int MY_AUDIO_PERMISSION_CODE = 100;
     private static final String TAG = RegistrationActivity.class.getSimpleName();
@@ -46,13 +46,13 @@ public class VoiceActivity extends AppCompatActivity {
     private Button audioButton;
     private ProgressBar progressBar;
 
-    private VoiceActivity self;
+    private SpeakerActivity self;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_voice);
+        setContentView(R.layout.activity_speaker);
         user = (User) getIntent().getSerializableExtra("user");
 
         progressBar = findViewById(R.id.progress_bar);
@@ -132,31 +132,11 @@ public class VoiceActivity extends AppCompatActivity {
                 } else if (responseBody.has("result")) {
                     Log.d(TAG, responseBody.toString());
                     if (responseBody.getString("result").equals("Accept")) {
-                        user.setVoiceBool(true);
-                        if( user.getFaceBool()) {
-                            Intent galleryIntent = new Intent(VoiceActivity.this, GalleryActivity.class);
-                            galleryIntent.putExtra("user", user);
-                            startActivity(galleryIntent);
-                            self.finish();
-                        }
-                        else{
-                            Intent galleryIntent = new Intent(VoiceActivity.this, SpeakerActivity.class);
-                            galleryIntent.putExtra("user", user);
-                            startActivity(galleryIntent);
-                            self.finish();
-                        }
+                        Intent galleryIntent = new Intent(SpeakerActivity.this, GalleryActivity.class);
+                        galleryIntent.putExtra("user", user);
+                        startActivity(galleryIntent);
+                        self.finish();
                     } else {
-                        if (user.getFaceBool() == false) {
-                            Intent galleryIntent = new Intent(VoiceActivity.this, InitActivity.class);
-                            galleryIntent.putExtra("user", user);
-                            startActivity(galleryIntent);
-                            self.finish();
-                        } else {
-                            Intent galleryIntent = new Intent(VoiceActivity.this, SpeakerActivity.class);
-                            galleryIntent.putExtra("user", user);
-                            startActivity(galleryIntent);
-                            self.finish();
-                        }
                         runOnUiThread(() -> {
                             Toast.makeText(getApplicationContext(), resBody, Toast.LENGTH_LONG).show();
                             progressBar.setVisibility(View.INVISIBLE);
@@ -194,3 +174,4 @@ public class VoiceActivity extends AppCompatActivity {
 
     }
 }
+

@@ -203,13 +203,18 @@ public class FaceActivity extends AppCompatActivity {
                 });
 
             } else if (responseVerifyBody.has("isIdentical") && responseVerifyBody.getBoolean("isIdentical")) {
+                user.setFaceBool(true);
                 Intent voiceIntent = new Intent(FaceActivity.this, VoiceActivity.class);
                 voiceIntent.putExtra("user", user);
                 startActivity(voiceIntent);
                 self.finish();
             } else {
                 runOnUiThread(() -> {
-                    Toast.makeText(getApplicationContext(), "Please try again, response: " + responseVerify, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Your request is rejected, to access to your secure folder you must pass the next two steps " + responseVerify, Toast.LENGTH_LONG).show();
+                    Intent voiceIntent = new Intent(FaceActivity.this, VoiceActivity.class);
+                    voiceIntent.putExtra("user", user);
+                    startActivity(voiceIntent);
+                    self.finish();
                     photoButton.setVisibility(View.VISIBLE);
                     progressBar.setVisibility(View.INVISIBLE);
                 });

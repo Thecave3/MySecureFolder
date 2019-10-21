@@ -13,6 +13,9 @@ public class User implements Serializable {
     private final String name;
     private final String faceId;
     private final String audioId;
+    private boolean faceBool = false;
+    private boolean voiceBool = false;
+
 
     /**
      *
@@ -36,4 +39,20 @@ public class User implements Serializable {
     public String getFaceId() {
         return faceId;
     }
+
+    public boolean getFaceBool() {
+        return  faceBool;
+    }
+    public boolean getVoiceBool() {
+        return  voiceBool;
+    }
+
+    public void setFaceBool(boolean v) {
+        this.faceBool= v;
+    }
+
+    public void setVoiceBool(boolean v) {
+        this.voiceBool= v;
+    }
+
 }
