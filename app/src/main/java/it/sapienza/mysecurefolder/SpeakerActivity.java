@@ -37,7 +37,7 @@ import okhttp3.Response;
 public class SpeakerActivity extends AppCompatActivity {
 
     private static final int MY_AUDIO_PERMISSION_CODE = 100;
-    private static final String TAG = RegistrationActivity.class.getSimpleName();
+    private static final String TAG = SpeakerActivity.class.getSimpleName();
     private static final int RECORD_REQUEST = 2;
 
     private User user;
@@ -112,7 +112,7 @@ public class SpeakerActivity extends AppCompatActivity {
                     .build();
 
             Request request = new Request.Builder()
-                    .url(App.getBaseUrl() + "/audio/verify")
+                    .url(App.getBaseUrl() + "/audio/identify")
                     .post(requestBody)
                     .build();
 
@@ -171,7 +171,6 @@ public class SpeakerActivity extends AppCompatActivity {
         } else {
             Log.e(TAG, "onActivityResult: boh");
         }
-
     }
 }
 

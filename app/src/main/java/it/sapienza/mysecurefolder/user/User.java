@@ -13,12 +13,8 @@ public class User implements Serializable {
     private final String name;
     private final String faceId;
     private final String audioId;
-    private boolean faceBool = false;
-    private boolean voiceBool = false;
-
 
     /**
-     *
      * @param user JSONObject representing the user, passed by the server
      * @throws JSONException if one of the fields is not present (probably because is not returned by server)
      */
@@ -38,21 +34,6 @@ public class User implements Serializable {
 
     public String getFaceId() {
         return faceId;
-    }
-
-    public boolean getFaceBool() {
-        return  faceBool;
-    }
-    public boolean getVoiceBool() {
-        return  voiceBool;
-    }
-
-    public void setFaceBool(boolean v) {
-        this.faceBool= v;
-    }
-
-    public void setVoiceBool(boolean v) {
-        this.voiceBool= v;
     }
 
 }

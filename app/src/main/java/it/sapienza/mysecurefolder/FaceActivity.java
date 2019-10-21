@@ -203,9 +203,9 @@ public class FaceActivity extends AppCompatActivity {
                 });
 
             } else if (responseVerifyBody.has("isIdentical") && responseVerifyBody.getBoolean("isIdentical")) {
-                user.setFaceBool(true);
                 Intent voiceIntent = new Intent(FaceActivity.this, VoiceActivity.class);
                 voiceIntent.putExtra("user", user);
+                voiceIntent.putExtra("isFaceTestPassed", true);
                 startActivity(voiceIntent);
                 self.finish();
             } else {
@@ -213,6 +213,7 @@ public class FaceActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Your request is rejected, to access to your secure folder you must pass the next two steps " + responseVerify, Toast.LENGTH_LONG).show();
                     Intent voiceIntent = new Intent(FaceActivity.this, VoiceActivity.class);
                     voiceIntent.putExtra("user", user);
+                    voiceIntent.putExtra("isFaceTestPassed", false);
                     startActivity(voiceIntent);
                     self.finish();
                     photoButton.setVisibility(View.VISIBLE);

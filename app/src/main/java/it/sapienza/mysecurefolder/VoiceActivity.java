@@ -41,6 +41,7 @@ public class VoiceActivity extends AppCompatActivity {
     private static final int RECORD_REQUEST = 2;
 
     private User user;
+    private boolean isFaceTestPassed;
     private String filePath;
 
     private Button audioButton;
@@ -54,6 +55,7 @@ public class VoiceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice);
         user = (User) getIntent().getSerializableExtra("user");
+        isFaceTestPassed = getIntent().getBooleanExtra("isFaceTestPassed", false);
 
         progressBar = findViewById(R.id.progress_bar);
         audioButton = findViewById(R.id.btnStartRecord);
@@ -132,33 +134,25 @@ public class VoiceActivity extends AppCompatActivity {
                 } else if (responseBody.has("result")) {
                     Log.d(TAG, responseBody.toString());
                     if (responseBody.getString("result").equals("Accept")) {
-                        user.setVoiceBool(true);
-                        if( user.getFaceBool()) {
+                        if (isFaceTestPassed) {
                             Intent galleryIntent = new Intent(VoiceActivity.this, GalleryActivity.class);
                             galleryIntent.putExtra("user", user);
                             startActivity(galleryIntent);
                             self.finish();
-                        }
-                        else{
-                            Intent galleryIntent = new Intent(VoiceActivity.this, SpeakerActivity.class);
-                            galleryIntent.putExtra("user", user);
-                            startActivity(galleryIntent);
+                        } else {
+                            Intent speakerIntent = new Intent(VoiceActivity.this, SpeakerActivity.class);
+                            speakerIntent.putExtra("user", user);
+                            startActivity(speakerIntent);
                             self.finish();
                         }
                     } else {
-                        if (user.getFaceBool() == false) {
-                            Intent galleryIntent = new Intent(VoiceActivity.this, InitActivity.class);
-                            galleryIntent.putExtra("user", user);
-                            startActivity(galleryIntent);
-                            self.finish();
-                        } else {
-                            Intent galleryIntent = new Intent(VoiceActivity.this, SpeakerActivity.class);
-                            galleryIntent.putExtra("user", user);
-                            startActivity(galleryIntent);
-                            self.finish();
-                        }
+                        // in this condition Voice test is not passed so user must do the speaker identification even if face test is passed.
                         runOnUiThread(() -> {
                             Toast.makeText(getApplicationContext(), resBody, Toast.LENGTH_LONG).show();
+                            Intent speakerIntent = new Intent(VoiceActivity.this, SpeakerActivity.class);
+                            speakerIntent.putExtra("user", user);
+                            startActivity(speakerIntent);
+                            self.finish();
                             progressBar.setVisibility(View.INVISIBLE);
                             audioButton.setVisibility(View.VISIBLE);
                         });
