@@ -17,10 +17,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.exifinterface.media.ExifInterface;
@@ -112,6 +114,23 @@ public class RegistrationActivity extends AppCompatActivity {
         });
 
         sendRecordButton.setOnClickListener(view -> sendAudioForEnrollment());
+
+        Spinner dropdown = findViewById(R.id.spinner1);
+        String[] items = new String[]{
+                "I am going to make him an offer he cannot refuse.",
+                "Be yourself, anyone else is already taken.",
+                "Houston we have had a problem.",
+                "My voice is my passport verify me.",
+                "Apple juice tastes funny after toothpaste.",
+                "You can get in without your password.",
+                "You can activate security system now.",
+                "My voice is stronger than passwords.",
+                "My password is not your business.",
+                "My name is unknown to you."
+        };
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        dropdown.setAdapter(adapter);
     }
 
 
