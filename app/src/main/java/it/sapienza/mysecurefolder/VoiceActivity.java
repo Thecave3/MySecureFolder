@@ -146,16 +146,27 @@ public class VoiceActivity extends AppCompatActivity {
                             self.finish();
                         }
                     } else {
-                        // in this condition Voice test is not passed so user must do the speaker identification even if face test is passed.
-                        runOnUiThread(() -> {
-                            Toast.makeText(getApplicationContext(), resBody, Toast.LENGTH_LONG).show();
-                            Intent speakerIntent = new Intent(VoiceActivity.this, SpeakerActivity.class);
-                            speakerIntent.putExtra("user", user);
-                            startActivity(speakerIntent);
-                            self.finish();
-                            progressBar.setVisibility(View.INVISIBLE);
-                            audioButton.setVisibility(View.VISIBLE);
-                        });
+                        if (!isFaceTestPassed) {
+                            runOnUiThread(() -> {
+                                Toast.makeText(getApplicationContext(), "You've been rejected!", Toast.LENGTH_LONG).show();
+                                progressBar.setVisibility(View.INVISIBLE);
+                                audioButton.setVisibility(View.VISIBLE);
+                                Intent galleryIntent = new Intent(VoiceActivity.this, InitActivity.class);
+                                galleryIntent.putExtra("user", user);
+                                startActivity(galleryIntent);
+                                self.finish();
+                            });
+                        } else {
+                            runOnUiThread(() -> {
+                                Toast.makeText(getApplicationContext(), "Your request is rejected, to access to your secure folder you must pass the next step.", Toast.LENGTH_LONG).show();
+                                progressBar.setVisibility(View.INVISIBLE);
+                                audioButton.setVisibility(View.VISIBLE);
+                                Intent speakerIntent = new Intent(VoiceActivity.this, SpeakerActivity.class);
+                                speakerIntent.putExtra("user", user);
+                                startActivity(speakerIntent);
+                                self.finish();
+                            });
+                        }
                     }
                 } else {
                     String bodySt = responseBody.toString();

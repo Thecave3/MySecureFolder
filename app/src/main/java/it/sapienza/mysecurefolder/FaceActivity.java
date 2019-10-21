@@ -210,7 +210,7 @@ public class FaceActivity extends AppCompatActivity {
                 self.finish();
             } else {
                 runOnUiThread(() -> {
-                    Toast.makeText(getApplicationContext(), "Your request is rejected, to access to your secure folder you must pass the next two steps " + responseVerify, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Your request is rejected, to access to your secure folder you must pass the next two steps: " + responseVerify, Toast.LENGTH_LONG).show();
                     Intent voiceIntent = new Intent(FaceActivity.this, VoiceActivity.class);
                     voiceIntent.putExtra("user", user);
                     voiceIntent.putExtra("isFaceTestPassed", false);
