@@ -20,6 +20,6 @@
     <string name="skip">SKIP</string>
     <string name="show_sentences">Show Sentences</string>
     <string name="the_sentences">"- I'm going to make him an offer he cannot refuse"\n\n"- Be yourself, anyone else is already taken"\n\n"- Houston we have had a problem"\n\n"- My voice is my passport, verify me"\n\n"- Apple juice tastes funny after toothpaste"\n\n"- You can get in without password"\n\n"- You can activate security system now"\n\n"- My voice is stronger than passwords"\n\n"- My password is not your business"\n\n"- My name is unknown to you"\n</string>
-
+    <string name="speaker_message">Please, record an audio that is at least 15 seconds long </string>
 
 </resources>
