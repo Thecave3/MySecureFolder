@@ -112,23 +112,28 @@
             android:text="@string/do_the_three_enrollments"
             android:textSize="20sp" />
 
-        <Spinner
-            android:id="@+id/spinner1"
-            android:layout_below="@id/textRecord"
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/popup"
+            android:layout_width="240dp"
+            android:layout_height="180dp"
+
+            ></ImageView>
+
+        <Button
+            android:id="@+id/btnShowSentences"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:layout_margin="5dp"
+            android:layout_below="@id/textRecord"
+            android:layout_marginTop="47dp"
             android:layout_centerHorizontal="true"
             android:textAlignment="center"
-            android:background="@android:drawable/btn_dropdown"
-            android:spinnerMode="dropdown"/>
-
+            android:background="@drawable/rounded_button"
+            android:text="@string/show_sentences" />
         <Button
             android:id="@+id/btnStartRecord"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/spinner1"
+            android:layout_below="@id/btnShowSentences"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:background="@drawable/rounded_button"
@@ -139,7 +144,7 @@
             android:layout_width="200dp"
             android:visibility="invisible"
             android:layout_height="wrap_content"
-            android:layout_below="@id/spinner1"
+            android:layout_below="@id/textRecord"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:background="@drawable/rounded_button"
@@ -150,7 +155,7 @@
             android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/spinner1"
+            android:layout_below="@id/textRecord"
             android:layout_centerHorizontal="true"/>
 
     </RelativeLayout>

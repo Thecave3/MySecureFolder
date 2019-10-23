@@ -15,9 +15,11 @@
     <string name="login_phase_1">Login phase 1</string>
     <string name="take_a_picture_to_sign_up">Take a picture to sign in</string>
     <string name="phrase_identification">\"Be yourself, anyone else is already taken.\"</string>
-    <string name="record_the_sentence_to_sign_up">Record the sentence to sign in.</string>
+    <string name="record_the_sentence_to_sign_up">Record one of the listed sentences to sign in.</string>
     <string name="scema">scema</string>
     <string name="skip">SKIP</string>
+    <string name="show_sentences">Show Sentences</string>
+    <string name="the_sentences">"- I'm going to make him an offer he cannot refuse"\n\n"- Be yourself, anyone else is already taken"\n\n"- Houston we have had a problem"\n\n"- My voice is my passport, verify me"\n\n"- Apple juice tastes funny after toothpaste"\n\n"- You can get in without password"\n\n"- You can activate security system now"\n\n"- My voice is stronger than passwords"\n\n"- My password is not your business"\n\n"- My name is unknown to you"\n</string>
 
 
 </resources>

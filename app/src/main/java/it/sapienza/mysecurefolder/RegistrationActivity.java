@@ -58,7 +58,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private static final int MY_CAMERA_PERMISSION_CODE = 128;
 
 
-    Button photoButton, saveNameButton, audioButton, sendRecordButton;
+    Button photoButton, saveNameButton, audioButton, sendRecordButton, showSentences;
     ImageView profileImage;
     EditText nameEditText;
     ProgressBar progressBar1, progressBar2, progressBar3;
@@ -73,6 +73,7 @@ public class RegistrationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_registration);
 
         audioButton = findViewById(R.id.btnStartRecord);
+        showSentences = findViewById(R.id.btnShowSentences);
         sendRecordButton = findViewById(R.id.btnSendRecord);
         profileImage = findViewById(R.id.imageView);
         photoButton = findViewById(R.id.buttonPhoto);
@@ -101,6 +102,13 @@ public class RegistrationActivity extends AppCompatActivity {
             records++;
         });
 
+        showSentences.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Intent i= new Intent(getApplicationContext(), PopActivity.class);
+                startActivity(i);
+            }
+        });
+
         saveNameButton.setOnClickListener(v -> {
             String username = String.valueOf(nameEditText.getText());
             if (TextUtils.isEmpty(username)) {
@@ -115,22 +123,6 @@ public class RegistrationActivity extends AppCompatActivity {
 
         sendRecordButton.setOnClickListener(view -> sendAudioForEnrollment());
 
-        Spinner dropdown = findViewById(R.id.spinner1);
-        String[] items = new String[]{
-                "I am going to make him an offer he cannot refuse.",
-                "Be yourself, anyone else is already taken.",
-                "Houston we have had a problem.",
-                "My voice is my passport verify me.",
-                "Apple juice tastes funny after toothpaste.",
-                "You can get in without your password.",
-                "You can activate security system now.",
-                "My voice is stronger than passwords.",
-                "My password is not your business.",
-                "My name is unknown to you."
-        };
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
-        dropdown.setAdapter(adapter);
     }
 
 

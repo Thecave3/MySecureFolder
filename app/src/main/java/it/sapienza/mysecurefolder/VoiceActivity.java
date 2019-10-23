@@ -45,6 +45,7 @@ public class VoiceActivity extends AppCompatActivity {
     private String filePath;
 
     private Button audioButton;
+    private Button showSentences;
     private ProgressBar progressBar;
 
     private VoiceActivity self;
@@ -59,12 +60,19 @@ public class VoiceActivity extends AppCompatActivity {
 
         progressBar = findViewById(R.id.progress_bar);
         audioButton = findViewById(R.id.btnStartRecord);
+        showSentences= findViewById(R.id.btnShowSentences);
 
         audioButton.setOnClickListener(v -> {
             if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_AUDIO_PERMISSION_CODE);
             } else {
                 recordEnrollment();
+            }
+        });
+        showSentences.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Intent i= new Intent(getApplicationContext(), PopActivity.class);
+                startActivity(i);
             }
         });
 
