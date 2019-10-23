@@ -69,11 +69,10 @@ public class VoiceActivity extends AppCompatActivity {
                 recordEnrollment();
             }
         });
-        showSentences.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(), PopActivity.class);
-                startActivity(i);
-            }
+
+        showSentences.setOnClickListener(view -> {
+            Intent i = new Intent(getApplicationContext(), PopActivity.class);
+            startActivity(i);
         });
 
         self = this;

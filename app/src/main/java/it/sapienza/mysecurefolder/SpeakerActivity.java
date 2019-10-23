@@ -130,9 +130,11 @@ public class SpeakerActivity extends AppCompatActivity {
                         progressBar.setVisibility(View.INVISIBLE);
                         audioButton.setVisibility(View.VISIBLE);
                     });
-                } else if (responseBody.has("result")) {
+                } else if (responseBody.has("status")) {
                     Log.d(TAG, responseBody.toString());
-                    if (responseBody.getString("result").equals("Accept")) {
+                    if (responseBody.getString("status").equals("succeeded")) {
+                        JSONObject processingResult = responseBody.getJSONObject("processingResult");
+                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), processingResult.toString(), Toast.LENGTH_LONG).show());
                         Intent galleryIntent = new Intent(SpeakerActivity.this, GalleryActivity.class);
                         galleryIntent.putExtra("user", user);
                         startActivity(galleryIntent);

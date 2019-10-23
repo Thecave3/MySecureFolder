@@ -20,7 +20,7 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
             android:name=".PopActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/AppTheme.PopMe" />
         <activity android:name=".GalleryActivity" />
         <activity android:name=".RegistrationActivity" />
         <activity android:name=".VoiceActivity" />

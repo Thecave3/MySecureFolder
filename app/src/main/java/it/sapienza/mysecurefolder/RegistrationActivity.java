@@ -17,12 +17,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.exifinterface.media.ExifInterface;
@@ -64,7 +62,7 @@ public class RegistrationActivity extends AppCompatActivity {
     ProgressBar progressBar1, progressBar2, progressBar3;
 
     // Both the ID are taken during name registration and when they need to be passed singularly the field has to be personId
-    String personIdFace, personIdAudio, currentImagePath;
+    String personIdFace, personIdVerificationAudio, personIdIdentificationAudio, currentImagePath;
 
 
     @Override
@@ -102,11 +100,9 @@ public class RegistrationActivity extends AppCompatActivity {
             records++;
         });
 
-        showSentences.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view) {
-                Intent i= new Intent(getApplicationContext(), PopActivity.class);
-                startActivity(i);
-            }
+        showSentences.setOnClickListener(view -> {
+            Intent i = new Intent(getApplicationContext(), PopActivity.class);
+            startActivity(i);
         });
 
         saveNameButton.setOnClickListener(v -> {
@@ -192,7 +188,9 @@ public class RegistrationActivity extends AppCompatActivity {
                     .build();
             try {
                 Response response = App.getHTTPClient().newCall(request).execute();
-                JSONObject responseBody = new JSONObject(Objects.requireNonNull(response.body()).string());
+                String responseBodyString = response.body().string();
+                Log.d(TAG, "createNewPerson: ResponseBody:" + responseBodyString);
+                JSONObject responseBody = new JSONObject(Objects.requireNonNull(responseBodyString));
                 if (responseBody.has("error")) {
                     String error = responseBody.getString("error");
                     runOnUiThread(() -> {
@@ -203,9 +201,10 @@ public class RegistrationActivity extends AppCompatActivity {
                         saveNameButton.setVisibility(View.VISIBLE);
                     });
                 } else {
-                    if (responseBody.has("personIdFace") && responseBody.has("verificationProfileId")) {
+                    if (responseBody.has("personIdFace") && responseBody.has("verificationProfileId") && responseBody.has("identificationProfileId")) {
                         personIdFace = responseBody.getString("personIdFace");
-                        personIdAudio = responseBody.getString("verificationProfileId");
+                        personIdVerificationAudio = responseBody.getString("verificationProfileId");
+                        personIdIdentificationAudio = responseBody.getString("identificationProfileId");
                         runOnUiThread(() -> {
                             Toast.makeText(getApplicationContext(), "Name accepted", Toast.LENGTH_LONG).show();
                             progressBar1.setVisibility(View.INVISIBLE);
@@ -247,7 +246,8 @@ public class RegistrationActivity extends AppCompatActivity {
                 RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
                         .addFormDataPart("audio", audioFileToUpload.getName(),
                                 RequestBody.create(MediaType.parse("audio/wav"), audioFileToUpload))
-                        .addFormDataPart("personId", personIdAudio)
+                        .addFormDataPart("personIdVerification", personIdVerificationAudio)
+                        .addFormDataPart("personIdIdentification", personIdIdentificationAudio)
                         .build();
 
                 Request request = new Request.Builder()
@@ -257,9 +257,9 @@ public class RegistrationActivity extends AppCompatActivity {
 
                 try {
                     Response response = App.getHTTPClient().newCall(request).execute();
-                    assert response.body() != null;
                     String resBody = response.body().string();
-                    JSONObject responseBody = new JSONObject(resBody);
+                    Log.d(TAG, "sendAudioForEnrollment: " + resBody);
+                    JSONObject responseBody = new JSONObject(Objects.requireNonNull(resBody));
 
                     if (responseBody.has("error")) {
                         String error = responseBody.getString("error");
