@@ -108,7 +108,7 @@ public class SpeakerActivity extends AppCompatActivity {
             RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
                     .addFormDataPart("audio", audioFileToUpload.getName(),
                             RequestBody.create(MediaType.parse("audio/wav"), audioFileToUpload))
-                    .addFormDataPart("personId", user.getAudioId())
+                    .addFormDataPart("personId", user.getIdentificationAudioId())
                     .build();
 
             Request request = new Request.Builder()
@@ -120,6 +120,7 @@ public class SpeakerActivity extends AppCompatActivity {
                 Response response = App.getHTTPClient().newCall(request).execute();
                 assert response.body() != null;
                 String resBody = response.body().string();
+                Log.d(TAG, "sendAudioForEnrollment: " + resBody);
                 JSONObject responseBody = new JSONObject(resBody);
 
                 if (responseBody.has("error")) {

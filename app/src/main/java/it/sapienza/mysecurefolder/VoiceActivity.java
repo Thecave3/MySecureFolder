@@ -60,7 +60,7 @@ public class VoiceActivity extends AppCompatActivity {
 
         progressBar = findViewById(R.id.progress_bar);
         audioButton = findViewById(R.id.btnStartRecord);
-        showSentences= findViewById(R.id.btnShowSentences);
+        showSentences = findViewById(R.id.btnShowSentences);
 
         audioButton.setOnClickListener(v -> {
             if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -69,9 +69,9 @@ public class VoiceActivity extends AppCompatActivity {
                 recordEnrollment();
             }
         });
-        showSentences.setOnClickListener(new View.OnClickListener(){
+        showSentences.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                Intent i= new Intent(getApplicationContext(), PopActivity.class);
+                Intent i = new Intent(getApplicationContext(), PopActivity.class);
                 startActivity(i);
             }
         });

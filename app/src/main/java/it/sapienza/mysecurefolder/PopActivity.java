@@ -18,15 +18,15 @@ public class PopActivity extends AppCompatActivity {
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 
-        int width= dm.widthPixels;
-        int height= dm.heightPixels;
+        int width = dm.widthPixels;
+        int height = dm.heightPixels;
 
-        getWindow().setLayout((int)(width*.9),(int)(height*.8));
+        getWindow().setLayout((int) (width * .9), (int) (height * .8));
 
-        WindowManager.LayoutParams params= getWindow().getAttributes();
-        params.gravity= Gravity.CENTER;
-        params.x =0;
-        params.y= -20;
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+        params.gravity = Gravity.CENTER;
+        params.x = 0;
+        params.y = -20;
 
         getWindow().setAttributes(params);
     }

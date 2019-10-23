@@ -13,6 +13,7 @@ public class User implements Serializable {
     private final String name;
     private final String faceId;
     private final String audioId;
+    private final String identificationAudioId;
 
     /**
      * @param user JSONObject representing the user, passed by the server
@@ -22,6 +23,7 @@ public class User implements Serializable {
         this.name = user.getString("name");
         this.faceId = user.getString("GUUID_Face");
         this.audioId = user.getString("GUUID_Audio");
+        this.identificationAudioId = user.getString("GUUID_Identification_Audio");
     }
 
     public String getAudioId() {
@@ -36,4 +38,7 @@ public class User implements Serializable {
         return faceId;
     }
 
+    public String getIdentificationAudioId() {
+        return identificationAudioId;
+    }
 }

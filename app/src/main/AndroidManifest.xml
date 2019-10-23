@@ -18,9 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".PopActivity"
-            android:theme="@style/AppTheme.PopMe"
-        ></activity>
+        <activity
+            android:name=".PopActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity android:name=".GalleryActivity" />
         <activity android:name=".RegistrationActivity" />
         <activity android:name=".VoiceActivity" />
