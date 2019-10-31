@@ -116,9 +116,9 @@ public class FaceActivity extends AppCompatActivity {
      * If a face is detected than the flow goes on to verify the picture with the person
      */
     private void sendImage() {
+        photoButton.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
         new Thread(() -> {
-            photoButton.setVisibility(View.INVISIBLE);
-            progressBar.setVisibility(View.VISIBLE);
 
             File fileToUpload = new File(currentImagePath);
             RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
